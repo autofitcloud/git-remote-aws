@@ -19,21 +19,48 @@ pip3 install git+https://gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
 
 ## Usage
 
-Add a `aws://...` remote
+Init a new git repo
 
 ```
-cd /tmp
-mkdir bla
-cd bla
+mktemp -d
+cd path/from/above
 git init
+```
+
+Add the aws remote for ec2 describe-instances
+
+```
 git remote add aws aws://profile@ec2.aws.amazon.com/describe-instances
 ```
 
-Fetch the data
+Pull the data
 
 ```
-git fetch aws
+git pull aws
 ```
+
+This creates a folder "aws" with a directory structure containing the relevant data
+
+```
+> tree
+.
+└── aws
+    └── us-west-2
+        └── ec2_describeInstances
+            ├── i-02432bc7.json
+            ├── i-069a7808addd143c7.json
+            ├── i-08c802de5accc1e89.json
+            ├── i-0e2662888859c5507.json
+            ├── i-0fb05d874895a05ec.json
+            ├── i-34ca2fc2.json
+            └── i-e1ca46eb.json
+
+3 directories, 7 files
+```
+
+## Notes
+
+PS: `git fetch aws` will also just pull ATM
 
 Save into a subdirectory
 
