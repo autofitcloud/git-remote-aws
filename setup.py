@@ -8,6 +8,10 @@ setup(
     install_requires=[
         'boto3',
         'click',
+        'requests',
+        'cachecontrol',
+        'pandas',
+        'pyyaml==5.1.1',
     ],
     entry_points='''
         [console_scripts]
