@@ -13,12 +13,25 @@ pip install git+https://...
 
 ## Usage
 
+Add a `aws://...` remote
+
 ```
 cd /tmp
 mkdir bla
 cd bla
 git init
-git remote add ec2DescInst aws://describe-instances.ec2.aws.amazon.com
+git remote add aws aws://profile@ec2.aws.amazon.com/describe-instances
+```
+
+Fetch the data
+
+```
+git fetch aws
+```
+
+Save into a subdirectory
+
+```
 mkdir ec2DescInst
 git worktree add ec2DescInst ec2DescInst
 ```
