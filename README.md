@@ -9,7 +9,12 @@ https://git-scm.com/docs/gitremote-helpers
 
 ```
 sudo apt-get install git python3 python3-pip
-pip3 install git+ssh://gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
+
+# over ssh if private repo
+pip3 install git+ssh://git@gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
+
+# over https if public repo
+pip3 install git+https://gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
 ```
 
 ## Usage
