@@ -8,7 +8,8 @@ https://git-scm.com/docs/gitremote-helpers
 ## Installation
 
 ```
-pip install git+https://...
+apt-get install git
+pip3 install git+https://gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
 ```
 
 ## Usage
