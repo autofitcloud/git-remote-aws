@@ -1,2 +1,6 @@
 boto3
 click
+requests
+cachecontrol
+pandas
+pyyaml==5.1.1

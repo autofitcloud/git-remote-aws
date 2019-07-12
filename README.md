@@ -8,7 +8,7 @@ https://git-scm.com/docs/gitremote-helpers
 ## Installation
 
 ```
-apt-get install git
+sudo apt-get install git python3 python3-pip
 pip3 install git+https://gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
 ```
 
@@ -49,10 +49,23 @@ mkdir cwDescAlarms
 
 ## Developer notes
 
+Install editable python package
+
 ```
-sudo apt-get install python3 python3-pip
 pip install pew
 pew new test_gra
-pip install -r requirements.txt
+# needed? # pip3 install -r requirements.txt
+pip3 install -e .
+```
 
+Test
+
+```
+git-remote-aws aws aws://profile@ec2.aws.amazon.com/describe-instances
+```
+
+or more completely
+
+```
+bash test_example.sh
 ```
