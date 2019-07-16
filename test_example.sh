@@ -16,12 +16,14 @@ git init
 git remote add aws_ec2_describeInstances aws+ec2::/describe-instances
 git remote add aws_ec2_catalog aws+ec2::/catalog
 git remote add aws_cw_listMetrics aws+cw::/list-metrics
+git remote add aws_cw_descAlarms aws+cw::/describe-alarms
 git remote -v
 
 # fetch
 git fetch aws_ec2_describeInstances
 git fetch aws_ec2_catalog
 git fetch aws_cw_listMetrics
+git fetch aws_cw_descAlarms # still WIP
 
 # force an error
 #git remote add wrong aws+ec2://blabla/catalog

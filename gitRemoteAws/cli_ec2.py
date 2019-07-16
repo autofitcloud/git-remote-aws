@@ -49,6 +49,7 @@ class Ec2Class:
 
 
   def list(self):
+    logger.debug('ec2class.list')
     profile_name = self.remote_parsed.username or 'default'
     
     # Debugging to file since stdout from this script does not go to terminal after git pull
@@ -148,7 +149,7 @@ def cli_core(remote_name, remote_url, HandlerClass):
       if cmd=='':
         break
        
-      main = Ec2Class(remote_name, remote_url)
+      main = HandlerClass(remote_name, remote_url)
       func = getattr(main, cmd, None)
       if func is None:
         raise Exception("Unsupported command %s"%cmd)
