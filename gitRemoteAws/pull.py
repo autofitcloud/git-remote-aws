@@ -101,7 +101,7 @@ def get_cwDescAlarms(fn, cloudwatch):
 EC2INSTANCESINFO = 'http://www.ec2instances.info/instances.json'
 def get_awsCat(fn, ec2catalog=None):
     ec2catalog = EC2INSTANCESINFO
-    logger.debug("getting aws catalog from %s"%ec2catalog)
+    logger.info("getting aws catalog from %s"%ec2catalog)
 
     # non-cached
     # https://3.python-requests.org/

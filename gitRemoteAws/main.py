@@ -16,18 +16,22 @@ class MainClass:
   def __init__(self, remote_name, remote_url):
     self.remote_name = remote_name
     self.remote_url = remote_url
+    
+    # git will drop the aws+ec2:: prefix before passing the remote URL
+    # https://rovaughn.github.io/2015-2-9.html
+    # if not remote_url.startswith('aws+ec2::'):
+    #   raise Exception("Unsupported git protocol: %s"%remote_url)
+    
+    # parse  
     self.remote_parsed = urlparse(self.remote_url)
     
     # since the scheme is already booked for "aws+ec2",
     # including the scheme again in the hostname requires using a ~ instead of ://
     # This field treats this case.
-    self.hostname_treated = None
+    self.endpoint_url = None
     if self.remote_parsed.hostname is not None:
-      self.hostname_treated = self.remote_parsed.hostname.replace("~", "://")
-      
-    if self.remote_parsed.scheme!='aws+ec2':
-      raise Exception("Unsupported scheme: %s"%self.remote_parsed.scheme)
-      
+      self.endpoint_url = "%s://%s"%(self.remote_parsed.scheme, self.remote_parsed.hostname)
+
     # more class members
     self.dm = DotMan()
 
@@ -55,9 +59,10 @@ class MainClass:
     #   fp.write(self.remote_parsed.path)
     #   fp.write("\n")
 
-    # logger.debug(self.remote_parsed.scheme)
-    # logger.debug(self.remote_parsed.hostname)
-    # logger.debug(self.remote_parsed.path)
+    logger.debug("parsed scheme, hostname, path")
+    logger.debug(self.remote_parsed.scheme)
+    logger.debug(self.remote_parsed.hostname)
+    logger.debug(self.remote_parsed.path)
     
     self.mkdir()
     
@@ -67,7 +72,7 @@ class MainClass:
     if self.remote_parsed.path=='/catalog':
       return self.get_ec2_catalog()
 
-    raise Exception("remote url not supported: %s"%self.remote_url)
+    logger.warning("remote url not supported. Skipping: %s"%self.remote_url)
 
 
   def mkdir(self):
@@ -92,7 +97,7 @@ class MainClass:
     # get instance descriptions
     logger.info('Cloning AWS EC2 description data\n')
     try:
-      ec2 = self.session.client('ec2', endpoint_url=self.hostname_treated)
+      ec2 = self.session.client('ec2', endpoint_url=self.endpoint_url)
     except ValueError as error:
       sys.stderr.write("fatal: %s\n"%str(error))
       sys.exit(70) # internal program error, https://github.com/glandium/git-cinnabar/blob/master/cinnabar/util.py#L916
@@ -104,6 +109,7 @@ class MainClass:
   
   def get_ec2_catalog(self):
     fn = copy.deepcopy(self.dm.fn)
+    logger.info('Fetching aws ec2 catalog')
     get_awsCat(fn)
 
 
@@ -114,26 +120,48 @@ class MainClass:
 @click.argument('remote_url')
 def cli(remote_name, remote_url):
     # init logging .. it's very important to use the stdout streamhandler so that git doesn't return a non-0 exit code
-    logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler(sys.stdout)
+    ch = logging.StreamHandler(sys.stderr)
+    logger.setLevel(logging.DEBUG) # DEBUG WARNING
     logger.addHandler(ch)
     
     # start
-    logger.info('Fetching from %s\n'%remote_url)
+    logger.info('Fetching from name, url: %s, %s\n'%(remote_name, remote_url))
     
-    # check if git is requesting capabilities
-    # https://click.palletsprojects.com/en/5.x/utils/#standard-streams
-    # stdin_text = click.get_text_stream('stdin')
-    # logger.debug('stdin is')
-    # logger.debug(stdin_text.read())
-    # logger.debug('')
-    # if stdin_text=='capabilities':
-    #   logger.debug("import")
-    #   return
-  
-    # proceed
-    main = MainClass(sys.argv[1], sys.argv[2])
-    main.handle()
+    while True:
+      # check if git is requesting capabilities
+      # https://click.palletsprojects.com/en/5.x/utils/#standard-streams
+      # stdin_text = click.get_text_stream('stdin')
+      stdin_text = sys.stdin.readline().strip() # strip to remove trailing new-line character
+      logger.debug('stdin is "%s"'%stdin_text)
+
+      if stdin_text=='':
+        break
+        
+      if stdin_text=='capabilities':
+        sys.stdout.write("import\n")
+        
+        # add refspec capability
+        # treats error but I don't implement this properly
+        # Copied from 
+        # https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L112
+        sys.stdout.write("refspec HEAD:refs/aws+ec2/HEAD\n")
+        
+        # copied idea of new-line and flush from
+        # https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L115
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+        continue
+    
+      # proceed
+      if stdin_text=='list':
+        main = MainClass(sys.argv[1], sys.argv[2])
+        main.handle()
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+        continue
+      
+      # other unsupported command
+      raise Exception("Unsupported command %s"%stdin_text)
 
 
 if __name__ == '__main__':
