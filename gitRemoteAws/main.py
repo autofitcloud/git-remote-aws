@@ -4,10 +4,13 @@ import sys
 import click
 import os
 import boto3
+import logging
 
 from .pull import SessionMan, get_instDesc, get_awsCat
 from .dotman import DotMan
 import copy
+
+logger = logging.getLogger('git-remote-aws')
 
 class MainClass:
   def __init__(self, remote_name, remote_url):
@@ -32,11 +35,11 @@ class MainClass:
     self.session = SessionMan(self.dm)
     self.my_region = self.session.getSession().region_name
     #region_name is basically defined as session.get_config_variable('region')
-    # sys.stderr.write("sts region", my_region)
+    # logger.debug("sts region", my_region)
     
     if self.my_region is None:
-        sys.stderr.write("fatal: failed to detect region name.")
-        sys.stderr.write("Are you sure you configured awscli? Check files in %s"%dm.fn['aws_dot'])
+        logger.error("fatal: failed to detect region name.")
+        logger.error("Are you sure you configured awscli? Check files in %s"%dm.fn['aws_dot'])
         sys.exit(1)
 
 
@@ -52,9 +55,9 @@ class MainClass:
     #   fp.write(self.remote_parsed.path)
     #   fp.write("\n")
 
-    # sys.stderr.write(self.remote_parsed.scheme)
-    # sys.stderr.write(self.remote_parsed.hostname)
-    # sys.stderr.write(self.remote_parsed.path)
+    # logger.debug(self.remote_parsed.scheme)
+    # logger.debug(self.remote_parsed.hostname)
+    # logger.debug(self.remote_parsed.path)
     
     self.mkdir()
     
@@ -71,7 +74,7 @@ class MainClass:
     fn = copy.deepcopy(self.dm.fn)
 
     fn['pull_region_one'] = self.dm.pull_region_one(self.my_region)
-    #sys.stderr.write("mkdir %s"%fn['pull_region_one'])
+    #logger.debug("mkdir %s"%fn['pull_region_one'])
     os.makedirs(fn['pull_region_one'], exist_ok=True)
 
 
@@ -80,15 +83,20 @@ class MainClass:
     
     # prep inst desc
     fn['ec2DescInst'] = self.dm.ec2DescInst(self.my_region)
-    #sys.stderr.write("mkdir %s"%fn['ec2DescInst'])
+    #logger.debug("mkdir %s"%fn['ec2DescInst'])
     os.makedirs(fn['ec2DescInst'], exist_ok=True)
     
     # put a .gitkeep file for the sake of git add in case of empty dir
     open(os.path.join(fn['ec2DescInst'], '.gitkeep'), 'w').write('')
 
     # get instance descriptions
-    sys.stderr.write('Cloning AWS EC2 description data')
-    ec2 = self.session.client('ec2', endpoint_url=self.hostname_treated)
+    logger.info('Cloning AWS EC2 description data\n')
+    try:
+      ec2 = self.session.client('ec2', endpoint_url=self.hostname_treated)
+    except ValueError as error:
+      sys.stderr.write("fatal: %s\n"%str(error))
+      sys.exit(70) # internal program error, https://github.com/glandium/git-cinnabar/blob/master/cinnabar/util.py#L916
+      
     get_instDesc(fn, ec2)
     
     # json.dump(fn, open('file.txt','w'))
@@ -105,21 +113,28 @@ class MainClass:
 @click.argument('remote_name')
 @click.argument('remote_url')
 def cli(remote_name, remote_url):
-    sys.stderr.write('Run the command again with ')
+    # init logging .. it's very important to use the stdout streamhandler so that git doesn't return a non-0 exit code
+    logger.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler(sys.stdout)
+    logger.addHandler(ch)
+    
+    # start
+    logger.info('Fetching from %s\n'%remote_url)
     
     # check if git is requesting capabilities
     # https://click.palletsprojects.com/en/5.x/utils/#standard-streams
-    stdin_text = click.get_text_stream('stdin')
-    sys.stderr.write('stdin is')
-    sys.stderr.write(stdin_text.read())
-    sys.stderr.write('')
+    # stdin_text = click.get_text_stream('stdin')
+    # logger.debug('stdin is')
+    # logger.debug(stdin_text.read())
+    # logger.debug('')
     # if stdin_text=='capabilities':
-    #   sys.stderr.write("import")
+    #   logger.debug("import")
     #   return
   
     # proceed
     main = MainClass(sys.argv[1], sys.argv[2])
     main.handle()
+
 
 if __name__ == '__main__':
   cli()

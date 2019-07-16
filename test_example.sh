@@ -21,5 +21,9 @@ git fetch aws_ec2_describeInstances
 git fetch aws_ec2_catalog
 tree
 
+# force an error
+git remote add wrong aws+ec2://blabla/describe-instances
+git fetch wrong
+
 #-------------------
 echo "Test complete"

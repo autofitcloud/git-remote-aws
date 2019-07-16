@@ -14,6 +14,9 @@ from cachecontrol import CacheControl
 import pandas as pd
 import copy
 
+import logging
+logger = logging.getLogger("git-remote-aws")
+
 ##############################
 # from lambda_login.py and lambda_ec2_describeInstances.py
 
@@ -65,7 +68,7 @@ def get_instDesc(fn, ec2):
     for ri in response_2:
         # save instance description
         fn_temp = os.path.join(fn['ec2DescInst'], ri['InstanceId']+'.json')
-        # sys.stderr.write("save ec2 desc to %s"%fn_temp)
+        # logger.debug("save ec2 desc to %s"%fn_temp)
         with open(fn_temp, 'w') as fh:
             json.dump(ri, fh, default=json_serial, indent=4, sort_keys=True)
 
@@ -89,7 +92,7 @@ def get_cwDescAlarms(fn, cloudwatch):
         # save instance description
         iid = [x['Value'] for x in response['Dimensions'] if x['Name']=='InstanceId'][0]
         fn_temp = os.path.join(fn['cwDescAlarms'], iid+'.json')
-        #sys.stderr.write("save ec2 desc to %s"%fn_temp)
+        #logger.debug("save ec2 desc to %s"%fn_temp)
         with open(fn_temp, 'w') as fh:
             json.dump(ri, fh, default=json_serial, indent=4, sort_keys=True)
 
@@ -98,7 +101,7 @@ def get_cwDescAlarms(fn, cloudwatch):
 EC2INSTANCESINFO = 'http://www.ec2instances.info/instances.json'
 def get_awsCat(fn, ec2catalog=None):
     ec2catalog = EC2INSTANCESINFO
-    sys.stderr.write("getting aws catalog from %s"%ec2catalog)
+    logger.debug("getting aws catalog from %s"%ec2catalog)
 
     # non-cached
     # https://3.python-requests.org/
@@ -115,7 +118,7 @@ def get_awsCat(fn, ec2catalog=None):
 
     # prep save
     fn['awsCat'] = os.path.join(fn['repo_aws'], 'www.ec2instances.info')
-    #sys.stderr.write("mkdir %s"%fn['awsCat'])
+    #logger.debug("mkdir %s"%fn['awsCat'])
     os.makedirs(fn['awsCat'], exist_ok=True)
 
     # save raw
@@ -239,11 +242,11 @@ def main(dm, repository_name, repository_url):
     if repository_url=='aws://cloudwatch.describe-alarms':
         # prep inst desc
         fn['cwDescAlarms'] = dm.cwDescAlarms(my_region)
-        #sys.stderr.write("mkdir %s"%fn['ec2DescInst'])
+        #logger.debug("mkdir %s"%fn['ec2DescInst'])
         os.makedirs(fn['cwDescAlarms'], exist_ok=True)
 
         # get instance descriptions
-        sys.stderr.write('Cloning AWS CW describe-alarms')
+        logger.debug('Cloning AWS CW describe-alarms')
         cloudwatch = session.client('cloudwatch')
         get_cwDescAlarms(fn, ec2)
 
@@ -251,5 +254,5 @@ def main(dm, repository_name, repository_url):
 
 
     # unknown pull action for remote
-    sys.stderr.write("warning: Unknown how to pull from %s, %s . Skipping"%(repository_name, repository_url))
+    logger.warning("warning: Unknown how to pull from %s, %s . Skipping"%(repository_name, repository_url))
     return
