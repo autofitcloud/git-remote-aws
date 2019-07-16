@@ -30,13 +30,27 @@ git init
 Add the aws remote for ec2 describe-instances
 
 ```
-git remote add aws aws://profile@ec2.aws.amazon.com/describe-instances
+git remote add example_1 aws+ec2://[profile@]<endpoint url>/describe-instances
+```
+
+Examples
+
+```
+# get from AWS using the default profile in ~/.aws/credentials
+git remote add example_1 aws+ec2:///describe-instances
+
+# Specific aws endpoint. Note the special "~" after the scheme.
+# This is a workaround since the scheme is already used for "aws+ec2"
+git remote add example_3 aws+ec2://http~ec2.us-west-2.amazonaws.com/describe-instances
+
+# use a specific profile and AWS default endpoints
+git remote add example_2 aws+ec2://profile@/describe-instances
 ```
 
 Pull the data
 
 ```
-git pull aws
+git pull example_1
 ```
 
 This creates a folder "aws" with a directory structure containing the relevant data
@@ -62,11 +76,11 @@ This creates a folder "aws" with a directory structure containing the relevant d
 
 PS: `git fetch aws` will also just pull ATM
 
-Save into a subdirectory
+Save into a subdirectory (doesnt work yet)
 
 ```
 mkdir ec2DescInst
-git worktree add ec2DescInst ec2DescInst
+git worktree add ec2DescInst example_1
 ```
 
 For more data
@@ -93,11 +107,30 @@ pip3 install -e .
 Test
 
 ```
-git-remote-aws aws aws://profile@ec2.aws.amazon.com/describe-instances
+git-remote-aws+ec2 aws aws+ec2:///describe-instances
+git-remote-aws+ec2 aws aws+ec2://http~ec2.us-west-2.amazonaws.com/describe-instances
+git-remote-aws+ec2 aws aws+ec2://http~localhost:5000/describe-instances
 ```
 
 or more completely
 
 ```
 bash test_example.sh
+```
+
+Testing against [moto server](https://github.com/spulec/moto#stand-alone-server-mode)
+
+```
+pip3 install "moto[server]"
+moto_server ec2 -p3000
+
+git-remote-aws+ec2 aws aws+ec2://http~localhost:3000/describe-instances
+```
+
+or
+
+```
+git init
+git remote add aws aws+ec2://http~localhost:3000/describe-instances
+git pull aws
 ```

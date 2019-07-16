@@ -11,7 +11,10 @@ cd $REPO
 git init
 
 # add remote
-git remote add aws aws://profile@ec2.aws.amazon.com/describe-instances
+git remote add aws_ec2 aws+ec2:///describe-instances
 
 # fetch
-git fetch aws
+git fetch aws_ec2
+
+
+echo "Test complete"

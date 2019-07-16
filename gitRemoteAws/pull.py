@@ -18,6 +18,9 @@ import copy
 # from lambda_login.py and lambda_ec2_describeInstances.py
 
 def postprocess_response(response_1):
+    if 'Reservations' not in response_1:
+        return
+    
     for res_i, res_v in enumerate(response_1['Reservations']):
         for i_desc in res_v['Instances']:
 
