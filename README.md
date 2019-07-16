@@ -18,6 +18,8 @@ References for git remote helpers
 - https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L112
     - this is a python implementation
 - https://github.com/awslabs/git-remote-codecommit
+- 
+
 
 ## Installation
 
@@ -73,7 +75,8 @@ git remote add example_2 aws+ec2::profile@/describe-instances
 Pull the data
 
 ```
-git pull example_1_ec2
+git fetch example_1_ec2
+git fetch example_1_catalog
 ```
 
 This creates a folder "aws" with a directory structure containing the relevant data
@@ -82,22 +85,27 @@ This creates a folder "aws" with a directory structure containing the relevant d
 > tree
 .
 └── aws
-    └── us-west-2
-        └── ec2_describeInstances
-            ├── i-02432bc7.json
-            ├── i-069a7808addd143c7.json
-            ├── i-08c802de5accc1e89.json
-            ├── i-0e2662888859c5507.json
-            ├── i-0fb05d874895a05ec.json
-            ├── i-34ca2fc2.json
-            └── i-e1ca46eb.json
+    ├── us-west-2
+    │   └── ec2_describeInstances
+    │       ├── i-02432bc7.json
+    │       ├── i-069a7808addd143c7.json
+    │       ├── i-08c802de5accc1e89.json
+    │       ├── i-0e2662888859c5507.json
+    │       ├── i-0fb05d874895a05ec.json
+    │       ├── i-34ca2fc2.json
+    │       └── i-e1ca46eb.json
+    └── www.ec2instances.info
+        ├── t0_raw.json
+        ├── t1_processed.json
+        ├── t3a_smaller_familyL1.json
+        └── t3b_smaller_familyL2.json
 
-3 directories, 7 files
+4 directories, 11 files
 ```
 
 ## Notes
 
-PS: `git fetch aws` will also just pull ATM
+PS: `git fetch aws` will actually create the files in the local directory (unlike a normal `git fetch` which doesn't update the local files)
 
 Save into a subdirectory (doesnt work yet)
 
@@ -155,5 +163,5 @@ or
 ```
 git init
 git remote add aws aws+ec2::http://localhost:3000/describe-instances
-git pull aws
+git fetch aws
 ```
