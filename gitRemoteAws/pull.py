@@ -65,7 +65,7 @@ def get_instDesc(fn, ec2):
     for ri in response_2:
         # save instance description
         fn_temp = os.path.join(fn['ec2DescInst'], ri['InstanceId']+'.json')
-        # print("save ec2 desc to %s"%fn_temp)
+        # sys.stderr.write("save ec2 desc to %s"%fn_temp)
         with open(fn_temp, 'w') as fh:
             json.dump(ri, fh, default=json_serial, indent=4, sort_keys=True)
 
@@ -89,7 +89,7 @@ def get_cwDescAlarms(fn, cloudwatch):
         # save instance description
         iid = [x['Value'] for x in response['Dimensions'] if x['Name']=='InstanceId'][0]
         fn_temp = os.path.join(fn['cwDescAlarms'], iid+'.json')
-        #print("save ec2 desc to %s"%fn_temp)
+        #sys.stderr.write("save ec2 desc to %s"%fn_temp)
         with open(fn_temp, 'w') as fh:
             json.dump(ri, fh, default=json_serial, indent=4, sort_keys=True)
 
@@ -98,7 +98,7 @@ def get_cwDescAlarms(fn, cloudwatch):
 EC2INSTANCESINFO = 'http://www.ec2instances.info/instances.json'
 def get_awsCat(fn, ec2catalog=None):
     ec2catalog = EC2INSTANCESINFO
-    print("getting aws catalog from %s"%ec2catalog)
+    sys.stderr.write("getting aws catalog from %s"%ec2catalog)
 
     # non-cached
     # https://3.python-requests.org/
@@ -114,8 +114,8 @@ def get_awsCat(fn, ec2catalog=None):
     df_json = json.dumps(r.json(), indent=4, sort_keys=True)
 
     # prep save
-    fn['awsCat'] = os.path.join(fn['dot'], 'www.ec2instances.info')
-    #print("mkdir %s"%fn['awsCat'])
+    fn['awsCat'] = os.path.join(fn['repo_aws'], 'www.ec2instances.info')
+    #sys.stderr.write("mkdir %s"%fn['awsCat'])
     os.makedirs(fn['awsCat'], exist_ok=True)
 
     # save raw
@@ -229,55 +229,21 @@ def get_awsCat(fn, ec2catalog=None):
 
 def main(dm, repository_name, repository_url):
     """
+    DEPRECATED .. replaced by code in main.py
+    
     dm - instance of DotMan
     repository_name - name of remote repo
     repository_url - url of remote repo
     """
-    fn = copy.deepcopy(dm.fn)
-
-    # get region https://stackoverflow.com/a/37519906/4126114
-    session = SessionMan(dm)
-    my_region = session.getSession().region_name
-    #region_name is basically defined as session.get_config_variable('region')
-    # print("sts region", my_region)
-
-    if my_region is None:
-        print("fatal: failed to detect region name.")
-        print("Are you sure you configured awscli? Check files in %s"%dm.fn['aws_dot'])
-        sys.exit(1)
-
-    fn['pull_region_one'] = dm.pull_region_one(my_region)
-    #print("mkdir %s"%fn['pull_region_one'])
-    os.makedirs(fn['pull_region_one'], exist_ok=True)
-
-    if repository_url=='aws://ec2.aws.amazon.com/describe-instances':
-        # prep inst desc
-        fn['ec2DescInst'] = dm.ec2DescInst(my_region)
-        #print("mkdir %s"%fn['ec2DescInst'])
-        os.makedirs(fn['ec2DescInst'], exist_ok=True)
-
-        # get instance descriptions
-        print('Cloning AWS EC2 description data')
-        ec2 = session.client('ec2')
-        get_instDesc(fn, ec2)
-
-        return
-
-    if repository_url==EC2INSTANCESINFO:
-        # get aws catalog
-        print('Cloning AWS EC2 catalog')
-        get_awsCat(fn)
-
-        return
 
     if repository_url=='aws://cloudwatch.describe-alarms':
         # prep inst desc
         fn['cwDescAlarms'] = dm.cwDescAlarms(my_region)
-        #print("mkdir %s"%fn['ec2DescInst'])
+        #sys.stderr.write("mkdir %s"%fn['ec2DescInst'])
         os.makedirs(fn['cwDescAlarms'], exist_ok=True)
 
         # get instance descriptions
-        print('Cloning AWS CW describe-alarms')
+        sys.stderr.write('Cloning AWS CW describe-alarms')
         cloudwatch = session.client('cloudwatch')
         get_cwDescAlarms(fn, ec2)
 
@@ -285,5 +251,5 @@ def main(dm, repository_name, repository_url):
 
 
     # unknown pull action for remote
-    print("warning: Unknown how to pull from %s, %s . Skipping"%(repository_name, repository_url))
+    sys.stderr.write("warning: Unknown how to pull from %s, %s . Skipping"%(repository_name, repository_url))
     return

@@ -5,7 +5,7 @@ import click
 import os
 import boto3
 
-from .pull import SessionMan, get_instDesc
+from .pull import SessionMan, get_instDesc, get_awsCat
 from .dotman import DotMan
 import copy
 
@@ -24,6 +24,22 @@ class MainClass:
       
     if self.remote_parsed.scheme!='aws+ec2':
       raise Exception("Unsupported scheme: %s"%self.remote_parsed.scheme)
+      
+    # more class members
+    self.dm = DotMan()
+
+    # get region https://stackoverflow.com/a/37519906/4126114
+    self.session = SessionMan(self.dm)
+    self.my_region = self.session.getSession().region_name
+    #region_name is basically defined as session.get_config_variable('region')
+    # sys.stderr.write("sts region", my_region)
+    
+    if self.my_region is None:
+        sys.stderr.write("fatal: failed to detect region name.")
+        sys.stderr.write("Are you sure you configured awscli? Check files in %s"%dm.fn['aws_dot'])
+        sys.exit(1)
+
+
 
   def handle(self):
     profile_name = self.remote_parsed.username or 'default'
@@ -36,47 +52,51 @@ class MainClass:
     #   fp.write(self.remote_parsed.path)
     #   fp.write("\n")
 
-    print(self.remote_parsed.scheme)
-    print(self.remote_parsed.hostname)
-    print(self.remote_parsed.path)
+    # sys.stderr.write(self.remote_parsed.scheme)
+    # sys.stderr.write(self.remote_parsed.hostname)
+    # sys.stderr.write(self.remote_parsed.path)
+    
+    self.mkdir()
+    
     if self.remote_parsed.path == '/describe-instances':
       return self.get_ec2_describeInstances()
+      
+    if self.remote_parsed.path=='/catalog':
+      return self.get_ec2_catalog()
 
     raise Exception("remote url not supported: %s"%self.remote_url)
 
-  def get_ec2_describeInstances(self):
-    dm = DotMan()
-    fn = copy.deepcopy(dm.fn)
 
-    # get region https://stackoverflow.com/a/37519906/4126114
-    session = SessionMan(dm)
-    my_region = session.getSession().region_name
-    #region_name is basically defined as session.get_config_variable('region')
-    # print("sts region", my_region)
+  def mkdir(self):
+    fn = copy.deepcopy(self.dm.fn)
 
-    if my_region is None:
-        print("fatal: failed to detect region name.")
-        print("Are you sure you configured awscli? Check files in %s"%dm.fn['aws_dot'])
-        sys.exit(1)
-
-    fn['pull_region_one'] = dm.pull_region_one(my_region)
-    #print("mkdir %s"%fn['pull_region_one'])
+    fn['pull_region_one'] = self.dm.pull_region_one(self.my_region)
+    #sys.stderr.write("mkdir %s"%fn['pull_region_one'])
     os.makedirs(fn['pull_region_one'], exist_ok=True)
 
+
+  def get_ec2_describeInstances(self):
+    fn = copy.deepcopy(self.dm.fn)
+    
     # prep inst desc
-    fn['ec2DescInst'] = dm.ec2DescInst(my_region)
-    #print("mkdir %s"%fn['ec2DescInst'])
+    fn['ec2DescInst'] = self.dm.ec2DescInst(self.my_region)
+    #sys.stderr.write("mkdir %s"%fn['ec2DescInst'])
     os.makedirs(fn['ec2DescInst'], exist_ok=True)
     
     # put a .gitkeep file for the sake of git add in case of empty dir
     open(os.path.join(fn['ec2DescInst'], '.gitkeep'), 'w').write('')
 
     # get instance descriptions
-    print('Cloning AWS EC2 description data')
-    ec2 = session.client('ec2', endpoint_url=self.hostname_treated)
+    sys.stderr.write('Cloning AWS EC2 description data')
+    ec2 = self.session.client('ec2', endpoint_url=self.hostname_treated)
     get_instDesc(fn, ec2)
     
     # json.dump(fn, open('file.txt','w'))
+    
+  
+  def get_ec2_catalog(self):
+    fn = copy.deepcopy(self.dm.fn)
+    get_awsCat(fn)
 
 
 #-----------------
@@ -85,6 +105,19 @@ class MainClass:
 @click.argument('remote_name')
 @click.argument('remote_url')
 def cli(remote_name, remote_url):
+    sys.stderr.write('Run the command again with ')
+    
+    # check if git is requesting capabilities
+    # https://click.palletsprojects.com/en/5.x/utils/#standard-streams
+    stdin_text = click.get_text_stream('stdin')
+    sys.stderr.write('stdin is')
+    sys.stderr.write(stdin_text.read())
+    sys.stderr.write('')
+    # if stdin_text=='capabilities':
+    #   sys.stderr.write("import")
+    #   return
+  
+    # proceed
     main = MainClass(sys.argv[1], sys.argv[2])
     main.handle()
 

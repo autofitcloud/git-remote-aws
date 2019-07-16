@@ -5,6 +5,12 @@ git remote helper for pulling aws data
 https://git-scm.com/docs/gitremote-helpers
 
 
+Similar projects
+
+- https://github.com/awslabs/git-remote-codecommit
+- https://github.com/git/git/blob/master/t/t5801/git-remote-testgit
+
+
 ## Installation
 
 ```
@@ -30,14 +36,24 @@ git init
 Add the aws remote for ec2 describe-instances
 
 ```
-git remote add example_1 aws+ec2://[profile@]<endpoint url>/describe-instances
+git remote add example_1 aws+ec2://[profile@]<endpoint url>/<service>
 ```
+
+where
+
+- `service` can be one of
+    - `describe-instances`
+    - `catalog`
+- `profile` is the profile name from `~/.aws/credentials` (not tested yet)
+- `endpoint url` is the AWS endpoint to use (leave blank for the default, or check examples below)
+
 
 Examples
 
 ```
 # get from AWS using the default profile in ~/.aws/credentials
-git remote add example_1 aws+ec2:///describe-instances
+git remote add example_1_ec2 aws+ec2:///describe-instances
+git remote add example_1_catalog aws+ec2:///catalog
 
 # Specific aws endpoint. Note the special "~" after the scheme.
 # This is a workaround since the scheme is already used for "aws+ec2"

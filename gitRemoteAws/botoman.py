@@ -29,12 +29,12 @@ class SessionMan:
         try:
             return boto3.session.Session(profile_name=profile_name)
         except ProfileNotFound as error:
-            print("fatal: %s"%str(error))
+            sys.stderr.write("fatal: %s"%str(error))
 
             # if not at clone stage
             if self.dm is not None:
-                print("Perhaps edit the 'profile' field in %s"%self.dm.fn['config'])
-                print("to match with the profiles in %s"%self.dm.fn['aws_credentials'])
+                sys.stderr.write("Perhaps edit the 'profile' field in %s"%self.dm.fn['config'])
+                sys.stderr.write("to match with the profiles in %s"%self.dm.fn['aws_credentials'])
 
             sys.exit(1)
 
