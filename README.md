@@ -46,11 +46,12 @@ git init
 Add the aws remote for ec2 describe-instances
 
 ```
-git remote add example_1 aws+ec2::[profile@]<endpoint url>/<command>
+git remote add example_1 aws+<service>::[profile@]<endpoint url>/<command>
 ```
 
 where
 
+- `service` is one of: `ec2`, `cw` (cloudwatch)
 - `profile` is the profile name from `~/.aws/credentials` (not tested yet)
 - `endpoint url` is the AWS endpoint to use (leave blank for the default, or check examples below)
 - `command` can be one of
@@ -64,6 +65,7 @@ Examples
 # get from AWS using the default profile in ~/.aws/credentials
 git remote add example_1_ec2 aws+ec2::/describe-instances
 git remote add example_1_catalog aws+ec2::/catalog
+git remote add example_1_cwListMetrics aws+cw::/list-metrics
 
 # Specific aws endpoint
 git remote add example_3 aws+ec2::http://ec2.us-west-2.amazonaws.com/describe-instances
@@ -138,9 +140,9 @@ pip3 install -e .
 Test
 
 ```
-git-remote-aws+ec2 aws /describe-instances # default AWS endpoint
-git-remote-aws+ec2 aws http://ec2.us-west-2.amazonaws.com/describe-instances # specific AWS endpoint
-git-remote-aws+ec2 aws http://localhost:5000/describe-instances # moto AWS endpoint
+echo "list" | git-remote-aws+ec2 aws /describe-instances # default AWS endpoint
+echo "list" | git-remote-aws+ec2 aws http://ec2.us-west-2.amazonaws.com/describe-instances # specific AWS endpoint
+echo "list" | git-remote-aws+ec2 aws http://localhost:5000/describe-instances # moto AWS endpoint
 ```
 
 or more completely
@@ -155,7 +157,7 @@ Testing against [moto server](https://github.com/spulec/moto#stand-alone-server-
 pip3 install "moto[server]"
 moto_server ec2 -p3000
 
-git-remote-aws+ec2 aws http://localhost:3000/describe-instances
+echo "list" | git-remote-aws+ec2 aws http://localhost:3000/describe-instances
 ```
 
 or

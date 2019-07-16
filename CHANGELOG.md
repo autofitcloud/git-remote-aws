@@ -5,6 +5,8 @@ Version 0.2.0 (2019-07-16)
 - FEAT: add ec2 catalog support (factored out some common code)
 - FEAT: add logging stream to stderr
 - FEAT: implement proper git <-> helper command exchange so that git no longer exits with non-0 code
+- ENH: factor out `cli` to `cli_core` and `Ec2Class` in preparation for new `aws+cw` protocol
+- FEAT: factor out and add alternative command for cloudwatch
 
 
 Version 0.1.0 (2019-07-12)

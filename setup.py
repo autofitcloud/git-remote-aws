@@ -15,6 +15,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        git-remote-aws+ec2=gitRemoteAws.main:cli
+        git-remote-aws+ec2=gitRemoteAws.cli_ec2:cli
+        git-remote-aws+cw=gitRemoteAws.cli_cw:cli
     ''',
 )

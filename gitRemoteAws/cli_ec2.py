@@ -6,13 +6,13 @@ import os
 import boto3
 import logging
 
-from .pull import SessionMan, get_instDesc, get_awsCat
+from .pull import SessionMan, get_instDesc, get_awsCat, get_cwDescAlarms
 from .dotman import DotMan
 import copy
 
 logger = logging.getLogger('git-remote-aws')
 
-class MainClass:
+class Ec2Class:
   def __init__(self, remote_name, remote_url):
     self.remote_name = remote_name
     self.remote_url = remote_url
@@ -48,7 +48,7 @@ class MainClass:
 
 
 
-  def handle(self):
+  def list(self):
     profile_name = self.remote_parsed.username or 'default'
     
     # Debugging to file since stdout from this script does not go to terminal after git pull
@@ -111,14 +111,24 @@ class MainClass:
     fn = copy.deepcopy(self.dm.fn)
     logger.info('Fetching aws ec2 catalog')
     get_awsCat(fn)
+    
+  def capabilities(self):
+    sys.stdout.write("import\n")
+    
+    # add refspec capability
+    # treats error but I don't implement this properly
+    # Copied from 
+    # https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L112
+    sys.stdout.write("refspec HEAD:refs/aws+ec2/HEAD\n")
+
 
 
 #-----------------
-
-@click.command()
-@click.argument('remote_name')
-@click.argument('remote_url')
-def cli(remote_name, remote_url):
+def cli_core(remote_name, remote_url, HandlerClass):
+    """
+    HandlerClass - eg Ec2Class, CwClass
+    """
+    
     # init logging .. it's very important to use the stdout streamhandler so that git doesn't return a non-0 exit code
     ch = logging.StreamHandler(sys.stderr)
     logger.setLevel(logging.DEBUG) # DEBUG WARNING
@@ -130,38 +140,33 @@ def cli(remote_name, remote_url):
     while True:
       # check if git is requesting capabilities
       # https://click.palletsprojects.com/en/5.x/utils/#standard-streams
-      # stdin_text = click.get_text_stream('stdin')
-      stdin_text = sys.stdin.readline().strip() # strip to remove trailing new-line character
-      logger.debug('stdin is "%s"'%stdin_text)
+      # cmd = click.get_text_stream('stdin')
+      cmd = sys.stdin.readline().strip() # strip to remove trailing new-line character
+      if cmd=='import': cmd='import_' # since import is not allowed
+      logger.debug('stdin is "%s"'%cmd)
 
-      if stdin_text=='':
+      if cmd=='':
         break
-        
-      if stdin_text=='capabilities':
-        sys.stdout.write("import\n")
-        
-        # add refspec capability
-        # treats error but I don't implement this properly
-        # Copied from 
-        # https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L112
-        sys.stdout.write("refspec HEAD:refs/aws+ec2/HEAD\n")
-        
-        # copied idea of new-line and flush from
-        # https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L115
-        sys.stdout.write("\n")
-        sys.stdout.flush()
-        continue
+       
+      main = Ec2Class(remote_name, remote_url)
+      func = getattr(main, cmd, None)
+      if func is None:
+        raise Exception("Unsupported command %s"%cmd)
     
-      # proceed
-      if stdin_text=='list':
-        main = MainClass(sys.argv[1], sys.argv[2])
-        main.handle()
-        sys.stdout.write("\n")
-        sys.stdout.flush()
-        continue
-      
-      # other unsupported command
-      raise Exception("Unsupported command %s"%stdin_text)
+      # call command             
+      func()
+      # copied idea of new-line and flush from
+      # https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L115
+      sys.stdout.write("\n")
+      sys.stdout.flush()
+      continue
+
+
+@click.command()
+@click.argument('remote_name')
+@click.argument('remote_url')
+def cli(remote_name, remote_url):
+    cli_core(remote_name, remote_url, Ec2Class)
 
 
 if __name__ == '__main__':
