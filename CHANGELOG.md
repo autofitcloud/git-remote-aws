@@ -5,6 +5,7 @@ Version 0.2.1 (2019-07-18)
 - FEAT: implement cloudwatch list-metrics remote fetch
 - FEAT: implement cloudwatch get-metric-data
 - ENH: move cw_getMetricStatistics out of ec2op to here for later integration (check issue #4)
+- ENH: use package name "git-remote-aws" with dashes instead of "gitRemoteAws" in setup.py
 
 
 Version 0.2.0 (2019-07-16)

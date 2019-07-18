@@ -1,9 +1,11 @@
-from setuptools import setup, find_packages
+from setuptools import setup # , find_packages
 
+# follow https://github.com/awslabs/git-remote-codecommit/blob/master/setup.py
 setup(
-    name='gitRemoteAws',
-    version='0.1.0',
-    packages=find_packages(),
+    name='git-remote-aws',
+    version='0.2.1',
+    # packages=find_packages(),
+    packages = ['gitRemoteAws'],
     include_package_data=True,
     install_requires=[
         'boto3',
