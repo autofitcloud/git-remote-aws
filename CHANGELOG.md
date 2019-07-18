@@ -1,12 +1,13 @@
 Version 0.2.1 (2019-07-18)
 
-- FEAT: drop deprecated piece of code in pull.py that was moved into cli_*.py
+- FEAT: drop deprecated piece of code in pull.py that was moved into `cli_*.py`
 - FEAT: use jmespath in filtering the cloudwatch describe alarms response
 - FEAT: implement cloudwatch list-metrics remote fetch
 - FEAT: implement cloudwatch get-metric-data
-- ENH: move cw_getMetricStatistics out of ec2op to here for later integration (check issue #4)
+- ENH: move `cw_getMetricStatistics` out of ec2op to here for later integration (check issue #4)
 - ENH: use package name "git-remote-aws" with dashes instead of "gitRemoteAws" in setup.py
 - ENH: add locale at top of cli.py files
+- ENH: ec2 catalog coming from non-aws source to go into separate folder than aws subrepo
 
 
 Version 0.2.0 (2019-07-16)

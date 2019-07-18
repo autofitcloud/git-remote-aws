@@ -303,7 +303,7 @@ def get_awsCat(fn, ec2catalog=None):
     df_json = json.dumps(r.json(), indent=4, sort_keys=True)
 
     # prep save
-    fn['awsCat'] = os.path.join(fn['repo_aws'], 'www.ec2instances.info')
+    fn['awsCat'] = os.path.join(fn['root'], 'www.ec2instances.info')
     #logger.debug("mkdir %s"%fn['awsCat'])
     os.makedirs(fn['awsCat'], exist_ok=True)
 
