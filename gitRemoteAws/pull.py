@@ -228,31 +228,3 @@ def get_awsCat(fn, ec2catalog=None):
 
 
 
-
-
-def main(dm, repository_name, repository_url):
-    """
-    DEPRECATED .. replaced by code in main.py
-    
-    dm - instance of DotMan
-    repository_name - name of remote repo
-    repository_url - url of remote repo
-    """
-
-    if repository_url=='aws://cloudwatch.describe-alarms':
-        # prep inst desc
-        fn['cwDescAlarms'] = dm.cwDescAlarms(my_region)
-        #logger.debug("mkdir %s"%fn['ec2DescInst'])
-        os.makedirs(fn['cwDescAlarms'], exist_ok=True)
-
-        # get instance descriptions
-        logger.debug('Cloning AWS CW describe-alarms')
-        cloudwatch = session.client('cloudwatch')
-        get_cwDescAlarms(fn, ec2)
-
-        return
-
-
-    # unknown pull action for remote
-    logger.warning("warning: Unknown how to pull from %s, %s . Skipping"%(repository_name, repository_url))
-    return

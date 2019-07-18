@@ -1,3 +1,8 @@
+Version 0.2.1 (2019-07-18)
+
+- FEAT: drop deprecated piece of code in pull.py that was moved into cli_*.py
+
+
 Version 0.2.0 (2019-07-16)
 
 - FEAT: change format of remote URL so that it allows setting different endpoints
@@ -8,6 +13,7 @@ Version 0.2.0 (2019-07-16)
 - ENH: factor out `cli` to `cli_core` and `Ec2Class` in preparation for new `aws+cw` protocol
 - FEAT: factor out and add alternative command for cloudwatch
 - FEAT: add cloudwatch/describe-alarms
+
 
 
 Version 0.1.0 (2019-07-12)
