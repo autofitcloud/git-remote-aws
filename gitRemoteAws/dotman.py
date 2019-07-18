@@ -49,3 +49,6 @@ class DotMan:
 
     def cwDescAlarms(self, region):
         return os.path.join(self.pull_region_one(region), 'cw_describeAlarms')
+
+    def cwListMetrics(self, region):
+        return os.path.join(self.pull_region_one(region), 'cw_listMetrics')

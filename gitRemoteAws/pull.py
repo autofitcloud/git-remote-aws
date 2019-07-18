@@ -82,7 +82,7 @@ def get_instDesc(fn, ec2):
 #   [{'name': 'one'}]
 import jmespath
 
-def get_cwDescAlarms(fn, cloudwatch):
+def get_cwCore(fn_dir, cloudwatch, operation_name, dict_key):
     """
     cloudwatch - boto3 cloudwatch client
     """
@@ -95,32 +95,41 @@ def get_cwDescAlarms(fn, cloudwatch):
     # https://github.com/boto/boto3/blob/90c03b3aff081e13f5a8dfca2f37afe978ee4809/docs/source/guide/cw-example-creating-alarms.rst#describe-alarms
     # dimensions and namespace parameters
     # https://github.com/boto/boto3/blob/90c03b3aff081e13f5a8dfca2f37afe978ee4809/docs/source/guide/cw-example-metrics.rst#example
-    # paginator = cloudwatch.get_paginator('describe_alarms', Namespace='AWS/EC2', MaxResults=MaxResults)
-    paginator = cloudwatch.get_paginator('describe_alarms')
+    # paginator = cloudwatch.get_paginator(operation_name, Namespace='AWS/EC2', MaxResults=MaxResults)
+    paginator = cloudwatch.get_paginator(operation_name)
     for i, response in enumerate(paginator.paginate(PaginationConfig=PaginationConfig)):
         # filter for instance descriptions
-        response['MetricAlarms'] = jmespath.search('MetricAlarms[?Namespace==`AWS/EC2`]', response)
+        sys.stderr.write(json.dumps(list(response.keys()), default=json_serial, indent=4, sort_keys=True))
+        sys.stderr.write('\n')
+        response[dict_key] = jmespath.search(dict_key+'[?Namespace==`AWS/EC2`]', response)
         
-        for j, alarm in enumerate(response['MetricAlarms']):
-            # sys.stderr.write("%s/%s: %s\n"%(i, j, json.dumps(alarm['Dimensions'])))
+        for j, operation_i in enumerate(response[dict_key]):
+            # sys.stderr.write("%s/%s: %s\n"%(i, j, json.dumps(operation_i['Dimensions'])))
             # save instance description
             # Note that this is another filtering step that maybe is unnecessary
             # because any "AWS/EC2" namespace item should have the "InstanceId" dimension
             # Keeping it anyway because this code is untested ATM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< FIXME
-            iid = [x['Value'] for x in alarm['Dimensions'] if x['Name']=='InstanceId']
+            iid = [x['Value'] for x in operation_i['Dimensions'] if x['Name']=='InstanceId']
             if len(iid)==0: continue
             
-            # sys.stderr.write(json.dumps(alarm, default=json_serial, indent=4, sort_keys=True))
+            # sys.stderr.write(json.dumps(operation_i, default=json_serial, indent=4, sort_keys=True))
             # sys.stderr.write('\n')
     
             iid = iid[0]
-            fn_temp = os.path.join(fn['cwDescAlarms'], iid+'.json')
+            fn_temp = os.path.join(fn_dir, iid+'.json')
             #logger.debug("save ec2 desc to %s"%fn_temp)
             with open(fn_temp, 'w') as fh:
-                json.dump(ri, fh, default=json_serial, indent=4, sort_keys=True)
+                json.dump(operation_i, fh, default=json_serial, indent=4, sort_keys=True)
 
 
+def get_cwDescAlarms(fn_dir, cloudwatch):
+    get_cwCore(fn_dir, cloudwatch, 'describe_alarms', 'MetricAlarms')
 
+
+def get_cwListMetrics(fn_dir, cloudwatch):
+    get_cwCore(fn_dir, cloudwatch, 'list_metrics', 'Metrics')
+                
+                
 EC2INSTANCESINFO = 'http://www.ec2instances.info/instances.json'
 def get_awsCat(fn, ec2catalog=None):
     ec2catalog = EC2INSTANCESINFO

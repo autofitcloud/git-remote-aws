@@ -7,7 +7,7 @@ import boto3
 import logging
 
 from .cli_ec2 import Ec2Class, cli_core
-from .pull import SessionMan, get_cwDescAlarms
+from .pull import SessionMan, get_cwDescAlarms, get_cwListMetrics
 from .dotman import DotMan
 import copy
 
@@ -32,7 +32,7 @@ class CwClass(Ec2Class):
     logger.debug(self.remote_parsed.hostname)
     logger.debug(self.remote_parsed.path)
     
-    self.mkdir()
+    self.makedirsRegion()
     
     if self.remote_parsed.path == '/list-metrics':
       return self.get_cw_listMetrics()
@@ -42,7 +42,6 @@ class CwClass(Ec2Class):
       
     logger.warning("remote url not supported. Skipping: %s"%self.remote_url)
     
-      
   def get_cw_descAlarms(self):
     fn = copy.deepcopy(self.dm.fn)
 
@@ -54,10 +53,20 @@ class CwClass(Ec2Class):
     # get instance descriptions
     logger.debug('Cloning AWS CW describe-alarms')
     cloudwatch = self.session.client('cloudwatch')
-    get_cwDescAlarms(fn, cloudwatch)
+    get_cwDescAlarms(fn['cwDescAlarms'], cloudwatch)
 
   def get_cw_listMetrics(self):
-    pass
+    fn = copy.deepcopy(self.dm.fn)
+
+    # prep inst desc
+    fn['cwListMetrics'] = self.dm.cwListMetrics(self.my_region)
+    #logger.debug("mkdir %s"%fn['ec2DescInst'])
+    os.makedirs(fn['cwListMetrics'], exist_ok=True)
+
+    # get instance descriptions
+    logger.debug('Cloning AWS CW list-metrics')
+    cloudwatch = self.session.client('cloudwatch')
+    get_cwListMetrics(fn['cwListMetrics'], cloudwatch)
 
   def capabilities(self):
     sys.stdout.write("import\n")

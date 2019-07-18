@@ -23,7 +23,7 @@ git remote -v
 git fetch aws_ec2_describeInstances
 git fetch aws_ec2_catalog
 git fetch aws_cw_listMetrics
-git fetch aws_cw_descAlarms # still WIP
+git fetch aws_cw_descAlarms
 
 # force an error
 #git remote add wrong aws+ec2://blabla/catalog

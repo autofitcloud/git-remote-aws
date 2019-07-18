@@ -65,7 +65,7 @@ class Ec2Class:
     logger.debug(self.remote_parsed.hostname)
     logger.debug(self.remote_parsed.path)
     
-    self.mkdir()
+    self.makedirsRegion()
     
     if self.remote_parsed.path == '/describe-instances':
       return self.get_ec2_describeInstances()
@@ -76,11 +76,11 @@ class Ec2Class:
     logger.warning("remote url not supported. Skipping: %s"%self.remote_url)
 
 
-  def mkdir(self):
+  def makedirsRegion(self):
     fn = copy.deepcopy(self.dm.fn)
 
     fn['pull_region_one'] = self.dm.pull_region_one(self.my_region)
-    #logger.debug("mkdir %s"%fn['pull_region_one'])
+    #logger.debug("makedirsRegion %s"%fn['pull_region_one'])
     os.makedirs(fn['pull_region_one'], exist_ok=True)
 
 
@@ -89,7 +89,7 @@ class Ec2Class:
     
     # prep inst desc
     fn['ec2DescInst'] = self.dm.ec2DescInst(self.my_region)
-    #logger.debug("mkdir %s"%fn['ec2DescInst'])
+    #logger.debug("makedirsRegion %s"%fn['ec2DescInst'])
     os.makedirs(fn['ec2DescInst'], exist_ok=True)
     
     # put a .gitkeep file for the sake of git add in case of empty dir
