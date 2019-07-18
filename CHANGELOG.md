@@ -1,6 +1,7 @@
 Version 0.2.1 (2019-07-18)
 
 - FEAT: drop deprecated piece of code in pull.py that was moved into cli_*.py
+- FEAT: use jmespath in filtering the cloudwatch describe alarms response
 
 
 Version 0.2.0 (2019-07-16)

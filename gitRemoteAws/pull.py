@@ -73,28 +73,51 @@ def get_instDesc(fn, ec2):
             json.dump(ri, fh, default=json_serial, indent=4, sort_keys=True)
 
 
+# use jmespath like awscli
+# https://stackoverflow.com/a/57018780/4126114
+# Example
+#   >>> mydata
+#   {'foo': {'bar': [{'name': 'one'}, {'name': 'two'}]}}
+#   >>> jmespath.search('foo.bar[?name==`one`]', mydata)
+#   [{'name': 'one'}]
+import jmespath
 
 def get_cwDescAlarms(fn, cloudwatch):
     """
     cloudwatch - boto3 cloudwatch client
     """
-    MaxResults=30 # FIXME <<<<<<<<<<<<<<<<<<<<<<<<<<<
-    MaxPages = 5
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudwatch.html#CloudWatch.Paginator.DescribeAlarms
+    PaginationConfig = {
+        'MaxResults': 3000 # FIXME <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    }
 
     # List alarms of insufficient data through the pagination interface
     # https://github.com/boto/boto3/blob/90c03b3aff081e13f5a8dfca2f37afe978ee4809/docs/source/guide/cw-example-creating-alarms.rst#describe-alarms
     # dimensions and namespace parameters
     # https://github.com/boto/boto3/blob/90c03b3aff081e13f5a8dfca2f37afe978ee4809/docs/source/guide/cw-example-metrics.rst#example
-    paginator = cloudwatch.get_paginator('describe_alarms', Namespace='AWS/EC2', MaxResults=MaxResults)
-    for i, response in enumerate(paginator.paginate()):
-        if i > MaxPages: break
-
-        # save instance description
-        iid = [x['Value'] for x in response['Dimensions'] if x['Name']=='InstanceId'][0]
-        fn_temp = os.path.join(fn['cwDescAlarms'], iid+'.json')
-        #logger.debug("save ec2 desc to %s"%fn_temp)
-        with open(fn_temp, 'w') as fh:
-            json.dump(ri, fh, default=json_serial, indent=4, sort_keys=True)
+    # paginator = cloudwatch.get_paginator('describe_alarms', Namespace='AWS/EC2', MaxResults=MaxResults)
+    paginator = cloudwatch.get_paginator('describe_alarms')
+    for i, response in enumerate(paginator.paginate(PaginationConfig=PaginationConfig)):
+        # filter for instance descriptions
+        response['MetricAlarms'] = jmespath.search('MetricAlarms[?Namespace==`AWS/EC2`]', response)
+        
+        for j, alarm in enumerate(response['MetricAlarms']):
+            # sys.stderr.write("%s/%s: %s\n"%(i, j, json.dumps(alarm['Dimensions'])))
+            # save instance description
+            # Note that this is another filtering step that maybe is unnecessary
+            # because any "AWS/EC2" namespace item should have the "InstanceId" dimension
+            # Keeping it anyway because this code is untested ATM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< FIXME
+            iid = [x['Value'] for x in alarm['Dimensions'] if x['Name']=='InstanceId']
+            if len(iid)==0: continue
+            
+            # sys.stderr.write(json.dumps(alarm, default=json_serial, indent=4, sort_keys=True))
+            # sys.stderr.write('\n')
+    
+            iid = iid[0]
+            fn_temp = os.path.join(fn['cwDescAlarms'], iid+'.json')
+            #logger.debug("save ec2 desc to %s"%fn_temp)
+            with open(fn_temp, 'w') as fh:
+                json.dump(ri, fh, default=json_serial, indent=4, sort_keys=True)
 
 
 

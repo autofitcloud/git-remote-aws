@@ -12,6 +12,7 @@ setup(
         'cachecontrol',
         'pandas',
         'pyyaml==5.1.1',
+        'jmespath==0.9.4',
     ],
     entry_points='''
         [console_scripts]
