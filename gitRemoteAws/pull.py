@@ -205,7 +205,7 @@ def get_cwGetMetricData(fn_dir1, cloudwatch, ec2):
                     desc_p1 = "%i seconds"%period
                     if period==seconds_in_one_day : desc_p1 = 'daily'
                     if period==seconds_in_one_hour: desc_p1 = 'hourly'
-                    args_desc = '%s - %s - %i days'%(metric_i, desc_p1, n_days)
+                    args_desc = '%s - %s - %i days - %s'%(metric_i, desc_p1, n_days, stat_i)
 
                     # path in which to save file
                     fn_dir2 = os.path.join(fn_dir1, args_desc)

@@ -8,6 +8,7 @@ Version 0.2.1 (2019-07-18)
 - ENH: use package name "git-remote-aws" with dashes instead of "gitRemoteAws" in setup.py
 - ENH: add locale at top of cli.py files
 - ENH: ec2 catalog coming from non-aws source to go into separate folder than aws subrepo
+- BUGIFX: include statistic in folder name of get-metric-data
 
 
 Version 0.2.0 (2019-07-16)
