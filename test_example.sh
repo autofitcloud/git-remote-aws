@@ -19,11 +19,12 @@ git remote add aws_cw_listMetrics aws+cw::/list-metrics
 git remote add aws_cw_descAlarms aws+cw::/describe-alarms
 git remote -v
 
-# fetch
-git fetch aws_ec2_describeInstances
-git fetch aws_ec2_catalog
-git fetch aws_cw_listMetrics
-git fetch aws_cw_descAlarms
+# fetch individually or all
+# git fetch aws_ec2_describeInstances
+# git fetch aws_ec2_catalog
+# git fetch aws_cw_listMetrics
+# git fetch aws_cw_descAlarms
+git fetch --all
 
 # force an error
 #git remote add wrong aws+ec2://blabla/catalog
