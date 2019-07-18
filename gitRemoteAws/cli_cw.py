@@ -80,7 +80,7 @@ class CwClass(Ec2Class):
     os.makedirs(fn['cwGetMetricData'], exist_ok=True)
 
     # get instance descriptions
-    logger.debug('Cloning AWS CW list-metrics')
+    logger.debug('Cloning AWS CW get-metric-data')
     cloudwatch = self.session.client('cloudwatch')
     ec2 = self.session.getSession().resource('ec2')
     get_cwGetMetricData(fn['cwGetMetricData'], cloudwatch, ec2)
