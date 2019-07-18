@@ -221,6 +221,67 @@ def get_cwGetMetricData(fn_dir1, cloudwatch, ec2):
                             fn_temp = os.path.join(fn_dir2, instance_obj.id+'.json')
                             with open(fn_temp, 'w') as fh:
                                 json.dump(operation_i, fh, default=json_serial, indent=4, sort_keys=True)
+              
+              
+"""
+Just moving this out of ec2op for later integration
+Check https://gitlab.com/autofitcloud/git-remote-aws/issues/4
+
+def cw_getMetricStatistics(instance_id, cloudwatch):
+
+    # utility variable so that all recorded data at this point get marked with the same timestamp
+    dt_now_d = dt.datetime.now()
+    dt_now_s = str(dt_now_d)
+    seconds_in_one_day = 60*60*24 # 86400  # used for granularity (daily)
+    seconds_in_one_hour = 60*60
+
+    # if permissions were ok, continue
+    # check ec2 permissions
+    # iterate over all regions
+
+    # collect daily data as well as hourly data
+    for n_days, period in [
+        (90, seconds_in_one_day),
+        (30, seconds_in_one_hour) # max n points is 1440, so cannot do 90 days with hourly in 1 shot
+        ]:
+        func_args_1 = dict(
+            Namespace='AWS/EC2',
+            Dimensions=[
+                {
+                    'Name': 'InstanceId',
+                    'Value': instance_id
+                }
+            ],
+            MetricName='CPUUtilization',
+            StartTime=dt_now_d - dt.timedelta(days=n_days),
+            EndTime=dt_now_d,
+            Period=period,
+            Statistics=[
+                'Maximum',
+                'Average',
+                'Minimum',
+                'SampleCount'
+            ],
+            Unit='Percent'
+        )
+        desc_p1 = "(every %s seconds)"%period
+        if period==seconds_in_one_day : desc_p1 = 'daily'
+        if period==seconds_in_one_hour: desc_p1 = 'hourly'
+        args_desc = 'CPU %s for %i days'%(desc_p1, n_days) # a description in simple english of the function arguments passed
+        #print("processing", args_desc)
+
+        response_1 = cloudwatch.get_metric_statistics(**func_args_1)
+
+        response_2 = {
+            'InstanceId': instance_id,
+            'ArgsDesc': args_desc,
+            'FetchTimestamp': dt_now_s,
+            'CloudwatchMetricArgs': func_args_1,
+            'CloudwatchMetricStatistics': response_1
+        }
+
+        yield response_2, args_desc
+"""
                 
                 
 EC2INSTANCESINFO = 'http://www.ec2instances.info/instances.json'

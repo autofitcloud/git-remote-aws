@@ -4,6 +4,7 @@ Version 0.2.1 (2019-07-18)
 - FEAT: use jmespath in filtering the cloudwatch describe alarms response
 - FEAT: implement cloudwatch list-metrics remote fetch
 - FEAT: implement cloudwatch get-metric-data
+- ENH: move cw_getMetricStatistics out of ec2op to here for later integration (check issue #4)
 
 
 Version 0.2.0 (2019-07-16)
