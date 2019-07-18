@@ -183,7 +183,7 @@ def get_cwGetMetricData(fn_dir1, cloudwatch, ec2):
                                 MetricStat=dict(
                                     Metric=dict(
                                         Namespace='AWS/EC2',
-                                        MetricName='CPUUtilization',
+                                        MetricName=metric_i,
                                         Dimensions=[
                                             {
                                                 'Name': 'InstanceId',
@@ -201,7 +201,14 @@ def get_cwGetMetricData(fn_dir1, cloudwatch, ec2):
                         EndTime=dt_now_d
                     )
                     
-                    fn_dir2 = os.path.join(fn_dir1, metric_i, stat_i, 'ndays %i'%n_days, 'period %i'%period)
+                    # a description in simple english of the function arguments passed
+                    desc_p1 = "%i seconds"%period
+                    if period==seconds_in_one_day : desc_p1 = 'daily'
+                    if period==seconds_in_one_hour: desc_p1 = 'hourly'
+                    args_desc = '%s - %s - %i days'%(metric_i, desc_p1, n_days)
+
+                    # path in which to save file
+                    fn_dir2 = os.path.join(fn_dir1, args_desc)
                     os.makedirs(fn_dir2, exist_ok=True)
                     open(os.path.join(fn_dir2, '.gitkeep'), 'w').write('')
                     
