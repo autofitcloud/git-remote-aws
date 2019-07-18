@@ -82,7 +82,7 @@ def get_instDesc(fn, ec2):
 #   [{'name': 'one'}]
 import jmespath
 
-def get_cwCore(fn_dir, cloudwatch, operation_name, dict_key):
+def get_cwCore(fn_dir, cloudwatch, operation_name, dict_key, **kwargs):
     """
     cloudwatch - boto3 cloudwatch client
     """
@@ -97,14 +97,17 @@ def get_cwCore(fn_dir, cloudwatch, operation_name, dict_key):
     # https://github.com/boto/boto3/blob/90c03b3aff081e13f5a8dfca2f37afe978ee4809/docs/source/guide/cw-example-metrics.rst#example
     # paginator = cloudwatch.get_paginator(operation_name, Namespace='AWS/EC2', MaxResults=MaxResults)
     paginator = cloudwatch.get_paginator(operation_name)
-    for i, response in enumerate(paginator.paginate(PaginationConfig=PaginationConfig)):
+    for i, response in enumerate(paginator.paginate(PaginationConfig=PaginationConfig, **kwargs)):
         # filter for instance descriptions
-        sys.stderr.write(json.dumps(list(response.keys()), default=json_serial, indent=4, sort_keys=True))
-        sys.stderr.write('\n')
+        #sys.stderr.write(json.dumps(list(response.keys()), default=json_serial, indent=4, sort_keys=True))
+        #sys.stderr.write(json.dumps(response, default=json_serial, indent=4, sort_keys=True))
+        #sys.stderr.write('\n')
         response[dict_key] = jmespath.search(dict_key+'[?Namespace==`AWS/EC2`]', response)
         
         for j, operation_i in enumerate(response[dict_key]):
-            # sys.stderr.write("%s/%s: %s\n"%(i, j, json.dumps(operation_i['Dimensions'])))
+            #sys.stderr.write("%s/%s: %s\n"%(i, j, json.dumps(operation_i['Dimensions'])))
+            #return # FIXME
+        
             # save instance description
             # Note that this is another filtering step that maybe is unnecessary
             # because any "AWS/EC2" namespace item should have the "InstanceId" dimension
@@ -128,6 +131,89 @@ def get_cwDescAlarms(fn_dir, cloudwatch):
 
 def get_cwListMetrics(fn_dir, cloudwatch):
     get_cwCore(fn_dir, cloudwatch, 'list_metrics', 'Metrics')
+    
+    
+import datetime as dt
+def get_cwGetMetricData(fn_dir1, cloudwatch, ec2):
+    """
+    cloudwatch - boto3 client for cloudwatch service
+    ec2 - boto3 resource for ec2 service
+    """
+    
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudwatch.html#CloudWatch.Paginator.GetMetricData
+    stat_list=[
+        'Maximum',
+        'Average',
+        'Minimum',
+        'SampleCount'
+    ]
+    metric_list = [
+        'CPUUtilization'
+    ]
+    # utility variable so that all recorded data at this point get marked with the same timestamp
+    dt_now_d = dt.datetime.now()
+    dt_now_s = str(dt_now_d)
+    seconds_in_one_day = 60*60*24 # 86400  # used for granularity (daily)
+    seconds_in_one_hour = 60*60
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudwatch.html#CloudWatch.Paginator.DescribeAlarms
+    PaginationConfig = {
+        'MaxResults': 3000 # FIXME <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    }
+
+    # if permissions were ok, continue
+    # check ec2 permissions
+    # iterate over all regions
+
+    # ec2.instances is of class ec2.instancesCollectionManager
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/collections.html
+    for instance_obj in ec2.instances.all():
+        # collect daily data as well as hourly data
+        for n_days, period in [
+            (90, seconds_in_one_day),
+            (30, seconds_in_one_hour) # max n points is 1440, so cannot do 90 days with hourly in 1 shot
+            ]:
+        
+            for stat_i in stat_list:
+                for metric_i in metric_list:
+                    
+                    func_kwargs = dict(
+                        MetricDataQueries = [
+                            dict(
+                                Id='m1', # ATM only 1 element in this list, so it doesn't matter
+                                MetricStat=dict(
+                                    Metric=dict(
+                                        Namespace='AWS/EC2',
+                                        MetricName='CPUUtilization',
+                                        Dimensions=[
+                                            {
+                                                'Name': 'InstanceId',
+                                                'Value': instance_obj.id
+                                            }
+                                        ]
+                                    ),
+                                    Period=period,
+                                    Stat=stat_i,
+                                    Unit='Percent'
+                                )
+                            )
+                        ],
+                        StartTime=dt_now_d - dt.timedelta(days=n_days),
+                        EndTime=dt_now_d
+                    )
+                    
+                    fn_dir2 = os.path.join(fn_dir1, metric_i, stat_i, 'ndays %i'%n_days, 'period %i'%period)
+                    os.makedirs(fn_dir2, exist_ok=True)
+                    open(os.path.join(fn_dir2, '.gitkeep'), 'w').write('')
+                    
+                    # cannot use get_cwCore since the usage is different than describe-alarms and list-metrics                
+                    operation_name='get_metric_data'
+                    dict_key = 'MetricDataResults'
+                    paginator = cloudwatch.get_paginator(operation_name)
+                    for i, response in enumerate(paginator.paginate(PaginationConfig=PaginationConfig, **func_kwargs)):
+                        for j, operation_i in enumerate(response[dict_key]):
+                            fn_temp = os.path.join(fn_dir2, instance_obj.id+'.json')
+                            with open(fn_temp, 'w') as fh:
+                                json.dump(operation_i, fh, default=json_serial, indent=4, sort_keys=True)
                 
                 
 EC2INSTANCESINFO = 'http://www.ec2instances.info/instances.json'

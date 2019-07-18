@@ -52,3 +52,6 @@ class DotMan:
 
     def cwListMetrics(self, region):
         return os.path.join(self.pull_region_one(region), 'cw_listMetrics')
+
+    def cwGetMetricData(self, region):
+        return os.path.join(self.pull_region_one(region), 'cw_getMetricData')
