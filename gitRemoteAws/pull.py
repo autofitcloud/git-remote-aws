@@ -132,6 +132,10 @@ def get_cwDescAlarms(fn_dir, cloudwatch):
 def get_cwListMetrics(fn_dir, cloudwatch):
     get_cwCore(fn_dir, cloudwatch, 'list_metrics', 'Metrics')
     
+def get_sns_listTopics(fn_dir, sns):
+    # SNS paginator
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sns.html#SNS.Paginator.ListTopics
+    get_cwCore(fn_dir, sns, 'list_topics', 'Topics')
     
 import datetime as dt
 def get_cwGetMetricData(fn_dir1, cloudwatch, ec2):

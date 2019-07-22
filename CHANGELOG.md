@@ -1,3 +1,8 @@
+Version 0.3.0 (2019-07-22)
+
+- FEAT: add sns list-topics
+
+
 Version 0.2.1 (2019-07-18)
 
 - FEAT: drop deprecated piece of code in pull.py that was moved into `cli_*.py`

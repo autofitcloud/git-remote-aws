@@ -98,7 +98,7 @@ class CwClass(Ec2Class):
     # treats error but I don't implement this properly
     # Copied from 
     # https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L112
-    sys.stdout.write("refspec HEAD:refs/aws+ec2/HEAD\n")
+    sys.stdout.write("refspec HEAD:refs/aws+cw/HEAD\n")
 
 
 

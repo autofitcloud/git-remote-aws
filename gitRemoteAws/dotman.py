@@ -55,3 +55,6 @@ class DotMan:
 
     def cwGetMetricData(self, region):
         return os.path.join(self.pull_region_one(region), 'cw_getMetricData')
+        
+    def snsListTopics(self, region):
+        return os.path.join(self.pull_region_one(region), 'snsListTopics')

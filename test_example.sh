@@ -18,6 +18,7 @@ git remote add aws_ec2_catalog aws+ec2::/catalog
 git remote add aws_cw_listMetrics aws+cw::/list-metrics
 git remote add aws_cw_descAlarms aws+cw::/describe-alarms
 git remote add aws_cw_getMetricData aws+cw::/get-metric-data
+git remote add aws_sns_listTopics aws+sns::/list-topics
 git remote -v
 
 # fetch individually or all
@@ -25,7 +26,9 @@ git remote -v
 # git fetch aws_ec2_catalog
 # git fetch aws_cw_listMetrics
 # git fetch aws_cw_descAlarms
-git fetch --all
+# git fetch aws_cw_getMetricData
+git fetch aws_sns_listTopics
+# git fetch --all
 
 # force an error
 #git remote add wrong aws+ec2://blabla/catalog
