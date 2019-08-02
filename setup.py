@@ -3,7 +3,7 @@ from setuptools import setup # , find_packages
 # follow https://github.com/awslabs/git-remote-codecommit/blob/master/setup.py
 setup(
     name='git-remote-aws',
-    version='0.3.0',
+    version='0.3.1',
     # packages=find_packages(),
     packages = ['gitRemoteAws'],
     include_package_data=True,

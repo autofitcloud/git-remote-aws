@@ -46,17 +46,19 @@ git init
 Add the aws remote for ec2 describe-instances
 
 ```
-git remote add example_1 aws+<service>::[profile@]<endpoint url>/<command>
+git remote add example_1 aws+<service>::<endpoint url>/<command>?profile_name=<optional profile name to use>
 ```
 
 where
 
 - `service` is one of: `ec2`, `cw` (cloudwatch)
-- `profile` is the profile name from `~/.aws/credentials` (not tested yet)
 - `endpoint url` is the AWS endpoint to use (leave blank for the default, or check examples below)
 - `command` can be one of
     - `describe-instances`
     - `catalog`
+- `profile_name` is the profile name from `~/.aws/credentials`
+    - this is optional
+    - Only one profile supported at a time (ATM, check [issue #5](https://gitlab.com/autofitcloud/git-remote-aws/issues/5))
 
 
 Examples

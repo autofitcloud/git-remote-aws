@@ -14,13 +14,15 @@ class SessionMan:
     """
     Manager of boto3 calls
     """
-    def __init__(self, dm=None):
+    def __init__(self, dm=None, profile_name=None):
         """
         dm - instance of dotman.DotMan
+        profile_name - name of profile in ~/.aws/credentials to use
         """
         self.dm = dm
+        self.profile_name = profile_name
 
-    def getSession(self, profile_name=None):
+    def getSession(self):
         """
         Wrap call to "boto3.session" to pass profile from config
         https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html?highlight=boto3.session.session.client#boto3.session.Session.client
@@ -29,7 +31,7 @@ class SessionMan:
         https://stackoverflow.com/a/42818143/4126114
         """
         try:
-            return boto3.session.Session(profile_name=profile_name)
+            return boto3.session.Session(profile_name=self.profile_name)
         except ProfileNotFound as error:
             logger.error("fatal: %s"%str(error))
 
@@ -40,7 +42,7 @@ class SessionMan:
 
             sys.exit(1)
 
-    def client(self, service_name, profile_name=None, endpoint_url=None):
-        session = self.getSession(profile_name=profile_name)
+    def client(self, service_name, endpoint_url=None):
+        session = self.getSession()
         client = session.client(service_name, endpoint_url=endpoint_url)
         return client

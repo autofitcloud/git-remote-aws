@@ -5,14 +5,15 @@ os.environ["LC_ALL"] = "C.UTF-8"
 os.environ["LANG"]   = "C.UTF-8"
 
 
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 import json
 import sys
 import click
 import boto3
 import logging
 
-from .pull import SessionMan, get_instDesc, get_awsCat, get_cwDescAlarms
+from .botoman import SessionMan
+from .pull import get_instDesc, get_awsCat, get_cwDescAlarms
 from .dotman import DotMan
 import copy
 
@@ -28,8 +29,18 @@ class Ec2Class:
     # if not remote_url.startswith('aws+ec2::'):
     #   raise Exception("Unsupported git protocol: %s"%remote_url)
     
-    # parse  
+    # parse  with urllib
+    # Example
+    # >>> from urllib.parse import urlparse, parse_qs
+    # >>> x='/describe-instances?profile=default&foo=bar'
+    # >>> urlparse(x)
+    # ParseResult(scheme='', netloc='', path='/describe-instances', params='', query='profile=default&foo=bar', fragment='')
+    # >>> parse_qs(urlparse(x).query)
+    # {'profile': ['default'], 'foo': ['bar']}
     self.remote_parsed = urlparse(self.remote_url)
+    
+    # parse query
+    self.remote_query = parse_qs(self.remote_parsed.query)
     
     # since the scheme is already booked for "aws+ec2",
     # including the scheme again in the hostname requires using a ~ instead of ://
@@ -41,8 +52,15 @@ class Ec2Class:
     # more class members
     self.dm = DotMan()
 
+    # identify profile name from remote query
+    profile_name = None
+    if 'profile_name' in self.remote_query:
+      if len(self.remote_query['profile_name'])>0:
+        # only take the first entry ATM, check https://gitlab.com/autofitcloud/git-remote-aws/issues/5
+        profile_name=self.remote_query['profile_name'][0] 
+    
     # get region https://stackoverflow.com/a/37519906/4126114
-    self.session = SessionMan(self.dm)
+    self.session = SessionMan(self.dm, profile_name=profile_name)
     self.my_region = self.session.getSession().region_name
     #region_name is basically defined as session.get_config_variable('region')
     # logger.debug("sts region", my_region)
@@ -71,6 +89,10 @@ class Ec2Class:
     logger.debug(self.remote_parsed.hostname)
     logger.debug(self.remote_parsed.path)
     
+    logger.debug("parsed query")
+    logger.debug(self.remote_query)
+    
+    # mkdir as needed
     self.makedirsRegion()
     
     if self.remote_parsed.path == '/describe-instances':

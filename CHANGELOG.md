@@ -1,6 +1,7 @@
 Version 0.3.1 (2019-08-02)
 
 - BUGFIX: fix wrong variable reference
+- FEAT: implement the `profile_name` parameter
 
 
 Version 0.3.0 (2019-07-22)
