@@ -49,7 +49,7 @@ class Ec2Class:
     
     if self.my_region is None:
         logger.error("fatal: failed to detect region name.")
-        logger.error("Are you sure you configured awscli? Check files in %s"%dm.fn['aws_dot'])
+        logger.error("Are you sure you configured awscli? Check files in %s"%self.dm.fn['aws_dot'])
         sys.exit(1)
 
 

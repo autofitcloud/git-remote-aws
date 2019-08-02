@@ -1,3 +1,8 @@
+Version 0.3.1 (2019-08-02)
+
+- BUGFIX: fix wrong variable reference
+
+
 Version 0.3.0 (2019-07-22)
 
 - FEAT: add sns list-topics
