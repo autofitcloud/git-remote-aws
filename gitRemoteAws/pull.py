@@ -52,11 +52,12 @@ def json_serial(obj):
     raise TypeError ("Type %s not serializable" % type(obj))
 
 
+from tqdm import tqdm
 def get_instDesc(fn, ec2):
     """
     ec2 - boto3 ec2 client
     """
-    MaxResults=30 # FIXME <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    MaxResults=3000 # FIXME <<<<<<<<<<<<<<<<<<<<<<<<<<<
     response_1 = ec2.describe_instances(
         DryRun=False, # False, # True, # |
         MaxResults=MaxResults # 1 # 30
@@ -64,8 +65,12 @@ def get_instDesc(fn, ec2):
     # https://stackoverflow.com/a/55749807/4126114
     # , ec2.meta.region_name
     response_2 = postprocess_response(response_1)
-
-    for ri in response_2:
+    
+    
+    nr = 0 # counter to check if we're hitting the max above     
+    for ri in tqdm(response_2, desc="Pulling instance desriptions"):
+        nr+=1
+        if nr==MaxResults: logger.warning("MaxResults=%i attained."%MaxResults)
         # save instance description
         fn_temp = os.path.join(fn['ec2DescInst'], ri['InstanceId']+'.json')
         # logger.debug("save ec2 desc to %s"%fn_temp)

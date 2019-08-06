@@ -1,3 +1,10 @@
+Version 0.3.2 (2019-08-06)
+
+- ENH: add progress output (still pending including a percentage, check issue # 6) with tqdm
+- BUGFIX: comment out logger.setLevel (should be based on the -v, check issue # 7)
+- BUGFIX: increase maxresults in fetch aws+ec2 instance descriptions from 30 to 3000 + add warning when the limit is hit
+
+
 Version 0.3.1 (2019-08-02)
 
 - BUGFIX: fix wrong variable reference

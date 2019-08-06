@@ -160,7 +160,8 @@ def cli_core(remote_name, remote_url, HandlerClass):
     
     # init logging .. it's very important to use the stdout streamhandler so that git doesn't return a non-0 exit code
     ch = logging.StreamHandler(sys.stderr)
-    logger.setLevel(logging.DEBUG) # DEBUG WARNING
+    # TODO figure out how the `-v` in `git fetch remotename -v` is passed, and use it to increase the level below
+    # logger.setLevel(logging.DEBUG) # DEBUG WARNING
     logger.addHandler(ch)
     
     # start

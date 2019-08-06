@@ -3,7 +3,7 @@ from setuptools import setup # , find_packages
 # follow https://github.com/awslabs/git-remote-codecommit/blob/master/setup.py
 setup(
     name='git-remote-aws',
-    version='0.3.1',
+    version='0.3.2',
     # packages=find_packages(),
     packages = ['gitRemoteAws'],
     include_package_data=True,
@@ -15,6 +15,7 @@ setup(
         'pandas',
         'pyyaml==5.1.1',
         'jmespath==0.9.4',
+        'tqdm==4.32.2',
     ],
     entry_points='''
         [console_scripts]
