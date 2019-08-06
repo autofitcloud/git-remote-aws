@@ -13,6 +13,7 @@ import requests
 from cachecontrol import CacheControl
 import pandas as pd
 import copy
+from tqdm import tqdm
 
 import logging
 logger = logging.getLogger("git-remote-aws")
@@ -52,7 +53,6 @@ def json_serial(obj):
     raise TypeError ("Type %s not serializable" % type(obj))
 
 
-from tqdm import tqdm
 def get_instDesc(fn, ec2):
     """
     ec2 - boto3 ec2 client
@@ -102,7 +102,7 @@ def get_cwCore(fn_dir, cloudwatch, operation_name, dict_key, **kwargs):
     # https://github.com/boto/boto3/blob/90c03b3aff081e13f5a8dfca2f37afe978ee4809/docs/source/guide/cw-example-metrics.rst#example
     # paginator = cloudwatch.get_paginator(operation_name, Namespace='AWS/EC2', MaxResults=MaxResults)
     paginator = cloudwatch.get_paginator(operation_name)
-    for i, response in enumerate(paginator.paginate(PaginationConfig=PaginationConfig, **kwargs)):
+    for i, response in tqdm(enumerate(paginator.paginate(PaginationConfig=PaginationConfig, **kwargs)), desc="Downloading %s"%operation_name):
         # filter for instance descriptions
         #sys.stderr.write(json.dumps(list(response.keys()), default=json_serial, indent=4, sort_keys=True))
         #sys.stderr.write(json.dumps(response, default=json_serial, indent=4, sort_keys=True))
@@ -137,6 +137,7 @@ def get_cwDescAlarms(fn_dir, cloudwatch):
 def get_cwListMetrics(fn_dir, cloudwatch):
     get_cwCore(fn_dir, cloudwatch, 'list_metrics', 'Metrics')
     
+    
 def get_sns_listTopics(fn_dir, sns):
     # SNS paginator
     # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sns.html#SNS.Paginator.ListTopics
@@ -146,7 +147,7 @@ def get_sns_listTopics(fn_dir, sns):
     operation_name = 'list_topics'
     dict_key = 'Topics'
     paginator = sns.get_paginator(operation_name)
-    for i, response in enumerate(paginator.paginate(PaginationConfig=PaginationConfig)):
+    for i, response in tqdm(enumerate(paginator.paginate(PaginationConfig=PaginationConfig)), desc="Downloading SNS topics list"):
         for j, operation_i in enumerate(response[dict_key]):
             # sys.stderr.write("%s/%s: %s\n"%(i, j, json.dumps(operation_i)))
             #return # FIXME
@@ -155,6 +156,7 @@ def get_sns_listTopics(fn_dir, sns):
             fn_temp = os.path.join(fn_dir, tid+'.json')
             with open(fn_temp, 'w') as fh:
                 json.dump(operation_i, fh, default=json_serial, indent=4, sort_keys=True)
+    
     
 import datetime as dt
 def get_cwGetMetricData(fn_dir1, cloudwatch, ec2):
@@ -189,7 +191,7 @@ def get_cwGetMetricData(fn_dir1, cloudwatch, ec2):
 
     # ec2.instances is of class ec2.instancesCollectionManager
     # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/collections.html
-    for instance_obj in ec2.instances.all():
+    for instance_obj in tqdm(ec2.instances.all(), desc="Downloading AWS Cloudwatch metrics"):
         # collect daily data as well as hourly data
         for n_days, period in [
             (90, seconds_in_one_day),
