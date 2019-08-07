@@ -167,3 +167,11 @@ References for git remote helpers
 - https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L112
     - this is a python implementation
 - https://github.com/awslabs/git-remote-codecommit
+
+
+pypi installation notes
+
+```
+python3 setup.py sdist bdist_wheel
+twine upload dist/*
+```
