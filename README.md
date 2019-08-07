@@ -1,4 +1,4 @@
-# git-remote-aws
+# git-remote-aws [![PyPI version](https://badge.fury.io/py/git-remote-aws.svg)](https://badge.fury.io/py/git-remote-aws)
 
 git remote helper for pulling aws data
 
