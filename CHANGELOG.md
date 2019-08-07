@@ -1,4 +1,4 @@
-Version latest (2019-08-07)
+Version 0.3.6 (2019-08-07)
 
 - ENH: moved path of aws catalog from gitRemoteAws.pull into dotman.fn.awsCat
 - BUGFIX: refactor `df` to `df_pd` to distnguish from `df_json` in `pull`
