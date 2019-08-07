@@ -12,6 +12,7 @@ import json
 import requests
 from cachecontrol import CacheControl
 import pandas as pd
+import numpy as np
 import copy
 from tqdm import tqdm
 
@@ -335,19 +336,42 @@ def get_awsCat(fn, ec2catalog=None):
     fn_temp = os.path.join(fn['awsCat'], 't0_raw.json')
     with open(fn_temp, 'w') as fh:
         fh.write(df_json)
+        
 
-    # postprocess (from colab/20190624-crow/t1-raw aws)
-    # df = pd.read_json(r.json())
-    df = pd.DataFrame(r.json()) # [:2]
+    # Convert json to pandas dataframe
+    # Test live with
+    # >>> import pandas as pd, json
+    # >>> df = pd.DataFrame(json.load(open("core/www.ec2instances.info/t0_raw.json")))
+    # >>> df.head()
+    #
+    # df_pd = pd.read_json(r.json())
+    df_pd = pd.DataFrame(r.json()) # [:2]
 
-    # process for back-compatibility
-    default_priceRegion = df['pricing'].keys()[0]
-    if 'linux' in df['pricing'][default_priceRegion]:
-        df['pricing'] = df['pricing'][default_priceRegion]['linux']['ondemand']
-    else:
-        df['pricing'] = None
+    # Gather prices from different regions into a list and calculate the average
+    # remember that default_priceRegion goes to the pandas dataframe index, and the output is a dict, so all keys after that go to the python dict
+    df_pd['price_list'] = df_pd['pricing'].apply(lambda x: np.array([float(x[y]['linux']['ondemand']) for y in x.keys() if 'linux' in x[y]]))
+    df_pd['price_avg'] = df_pd['price_list'].apply(lambda x: None if len(x)==0 else np.average(x))
+    
+    # check that the prices in all the regions do not differ by more than 20%
+    # In fact, there are plenty of price differences > 20%
+    # eg 'c5d.xlarge' min/max are 0.192/0.252
+    # So won't check this anymore
+    # df_pd['price_min'] = df_pd['price_list'].apply(lambda x: None if len(x)==0 else x.min())
+    # df_pd['price_max'] = df_pd['price_list'].apply(lambda x: None if len(x)==0 else x.max())
+    # df_pd['price_diff'] = (df_pd['price_max'] - df_pd['price_min'])/df_pd['price_min']*100
+    #if (df_pd['price_diff'] > 20).any():
+    #    logger.warning("Found instance types with price difference within regions > 20%%: %s. Aborting"%(', '.join(df_pd.instance_type[df_pd['price_diff'] > 20].values)))
 
-    df = df.rename(columns={
+    # logger.debug("df_pd.head")
+    # logger.debug(df_pd[['price_min', 'price_avg', 'price_max']].head())
+    
+    # replace the "pricing" field from a nested dict with the average
+    # (from colab/20190624-crow/t1-raw aws)
+    # This is for back-compatibility since my code expects pricing to be a single float
+    df_pd['pricing'] = df_pd['price_avg']
+
+    # rename columns as needed
+    df_pd = df_pd.rename(columns={
         'instance_type': 'API Name',
         'vCPU': 'vCPUs',
         'memory': 'Memory',
@@ -357,13 +381,13 @@ def get_awsCat(fn, ec2catalog=None):
     })
 
     # proceed
-    df = df[['API Name', 'vCPUs', 'Memory', 'Instance Storage', 'Network Performance', 'Linux On Demand cost']]
+    df_pd = df_pd[['API Name', 'vCPUs', 'Memory', 'Instance Storage', 'Network Performance', 'Linux On Demand cost']]
 
-    df['family_l1'] = df['API Name'].str.split('.').apply(lambda x: x[0][0])
-    df['family_l2'] = df['API Name'].str.split('.').apply(lambda x: x[0])
-    #df['vCPUs'] = df['vCPUs'].str.split(' ').apply(lambda x: x[0]).astype(int)
-    #df['Memory'] = df['Memory'].str.split(' ').apply(lambda x: x[0]).astype(float)
-    #df['Linux On Demand cost'] = ( df['Linux On Demand cost']
+    df_pd['family_l1'] = df_pd['API Name'].str.split('.').apply(lambda x: x[0][0])
+    df_pd['family_l2'] = df_pd['API Name'].str.split('.').apply(lambda x: x[0])
+    #df_pd['vCPUs'] = df_pd['vCPUs'].str.split(' ').apply(lambda x: x[0]).astype(int)
+    #df_pd['Memory'] = df_pd['Memory'].str.split(' ').apply(lambda x: x[0]).astype(float)
+    #df_pd['Linux On Demand cost'] = ( df_pd['Linux On Demand cost']
     #                                   .str.replace('unavailable', '')
     #                                   .str.split(' ')
     #                                   .apply(lambda x: x[0])
@@ -371,12 +395,12 @@ def get_awsCat(fn, ec2catalog=None):
     #                                   .map(lambda x: None if x=='' else float(x))
     #                             )
 
-    df = df.sort_values(['family_l1', 'family_l2', 'vCPUs', 'Memory'])
-    # df.set_index(['family_l1', 'family_l2', 'API Name'], inplace=True)
-    #df = df.sort_index()
+    df_pd = df_pd.sort_values(['family_l1', 'family_l2', 'vCPUs', 'Memory'])
+    # df_pd.set_index(['family_l1', 'family_l2', 'API Name'], inplace=True)
+    #df_pd = df_pd.sort_index()
 
-    # df_json = df.reset_index().to_json(orient='split')
-    df_json = df.to_json(orient='split')
+    # df_json = df_pd.reset_index().to_json(orient='split')
+    df_json = df_pd.to_json(orient='split')
 
     # pretty-print
     df_json = json.dumps(json.loads(df_json), indent=4, sort_keys=True)
@@ -387,7 +411,7 @@ def get_awsCat(fn, ec2catalog=None):
         fh.write(df_json)
 
     # append smaller types - family_l1
-    df_l1 = df.copy()
+    df_l1 = df_pd.copy()
     df_l1 = df_l1.sort_values(['family_l1', 'vCPUs', 'Memory', 'family_l2']) # notice the sorting fields
     df_l1['type_smaller'] = df_l1.groupby('family_l1')['API Name'].shift(+1)
     df_l1 = df_l1.merge(
@@ -412,7 +436,7 @@ def get_awsCat(fn, ec2catalog=None):
         fh.write(dfl1_json)
 
     # append smaller types - family_l2
-    df_l2 = df.reset_index().copy()
+    df_l2 = df_pd.reset_index().copy()
     df_l2 = df_l2.sort_values(['family_l1', 'family_l2', 'vCPUs', 'Memory']) # notice the sorting fields
     df_l2['type_smaller'] = df_l2.groupby('family_l2')['API Name'].shift(+1) # notice the groupby field
     df_l2 = df_l2.merge(
