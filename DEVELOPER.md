@@ -74,6 +74,9 @@ twine upload dist/*
 ```
 
 
+Got pypi badge from https://badge.fury.io/for/py/git-remote-aws
+
+
 Install git-remote-aws from gitlab
 
 ```
