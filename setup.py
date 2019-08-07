@@ -1,9 +1,14 @@
 from setuptools import setup # , find_packages
 
 # follow https://github.com/awslabs/git-remote-codecommit/blob/master/setup.py
+# and https://packaging.python.org/tutorials/packaging-projects/
 setup(
     name='git-remote-aws',
     version='0.3.3',
+    author="AutofitCloud Technologies, Inc",
+    author_email="shadi@autofitcloud.com",
+    url='https://gitlab.com/autofitcloud/git-remote-aws',
+    
     # packages=find_packages(),
     packages = ['gitRemoteAws'],
     include_package_data=True,

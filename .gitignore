@@ -1,2 +1,4 @@
 __pycache__
 git_remote_aws.egg-info/
+build/
+dist/
