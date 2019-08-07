@@ -19,7 +19,7 @@ class DotMan:
         # define important paths
         fn=OrderedDict()
         fn['root'] = os.path.abspath(self.rootdir)
-        fn['repo_aws'] = os.path.join(fn['root'], 'aws')
+        fn['repo_aws'] = os.path.join(fn['root'], 'aws.amazon.com')
         fn['pull_region_root'] = os.path.join(fn['repo_aws'])
         fn['optimize_region_root'] = os.path.join(fn['root'], 'regions')
         fn['aws_dot'] = os.path.expanduser("~/.aws")

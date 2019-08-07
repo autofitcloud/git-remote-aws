@@ -1,3 +1,9 @@
+Version 0.3.3 (2019-08-07)
+
+- ENH: change aws data root to be aws.amazon.com instead of just aws
+- ENH: improved readme
+
+
 Version 0.3.2 (2019-08-06)
 
 - ENH: add progress output (still pending including a percentage, check issue # 6) with tqdm

@@ -2,23 +2,7 @@
 
 git remote helper for pulling aws data
 
-Repository remote at https://gitlab.com/autofitcloud/git-remote-aws
-
-
-
-References for git remote helpers
-
-- https://git-scm.com/docs/gitremote-helpers
-- https://github.com/git/git/blob/master/t/t5801/git-remote-testgit
-- https://github.com/search?utf8=%E2%9C%93&q=git%2Dremote%2Dhelper
-    - list of git remote helpers on github.com
-- https://rovaughn.github.io/2015-2-9.html
-    - https://github.com/rovaughn/git-remote-grave
-    - this is a go implementation, but the accompanying blog post is very explanatory
-- https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L112
-    - this is a python implementation
-- https://github.com/awslabs/git-remote-codecommit
-- 
+Published at https://gitlab.com/autofitcloud/git-remote-aws
 
 
 ## Installation
@@ -169,3 +153,17 @@ git init
 git remote add aws aws+ec2::http://localhost:3000/describe-instances
 git fetch aws
 ```
+
+
+References for git remote helpers
+
+- https://git-scm.com/docs/gitremote-helpers
+- https://github.com/git/git/blob/master/t/t5801/git-remote-testgit
+- https://github.com/search?utf8=%E2%9C%93&q=git%2Dremote%2Dhelper
+    - list of git remote helpers on github.com
+- https://rovaughn.github.io/2015-2-9.html
+    - https://github.com/rovaughn/git-remote-grave
+    - this is a go implementation, but the accompanying blog post is very explanatory
+- https://github.com/glandium/git-cinnabar/blob/9aec8ed11752ca35fe9e5581cda2b7f16aa86d0d/cinnabar/remote_helper.py#L112
+    - this is a python implementation
+- https://github.com/awslabs/git-remote-codecommit
