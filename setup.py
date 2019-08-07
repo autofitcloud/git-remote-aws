@@ -1,13 +1,21 @@
 from setuptools import setup # , find_packages
 
+# copied from https://github.com/awslabs/git-remote-codecommit/blob/master/setup.py
+def read(fname):
+  return open(os.path.join(os.path.dirname(__file__), fname)).read()
+  
+
 # follow https://github.com/awslabs/git-remote-codecommit/blob/master/setup.py
 # and https://packaging.python.org/tutorials/packaging-projects/
 setup(
     name='git-remote-aws',
-    version='0.3.3',
+    version='0.3.4',
     author="AutofitCloud Technologies, Inc",
     author_email="shadi@autofitcloud.com",
     url='https://gitlab.com/autofitcloud/git-remote-aws',
+    description="git remote helper for fetching aws data",
+    long_description = read('README.md'),
+    long_description_content_type="text/markdown",
     
     # packages=find_packages(),
     packages = ['gitRemoteAws'],

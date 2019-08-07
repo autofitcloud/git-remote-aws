@@ -1,3 +1,8 @@
+Version 0.3.4 (2019-08-07)
+
+- ENH: add description in setup.py
+
+
 Version 0.3.3 (2019-08-07)
 
 - ENH: change aws data root to be aws.amazon.com instead of just aws
