@@ -10,7 +10,7 @@ def read(fname):
 # and https://packaging.python.org/tutorials/packaging-projects/
 setup(
     name='git-remote-aws',
-    version='0.3.4',
+    version='0.3.5',
     author="AutofitCloud Technologies, Inc",
     author_email="shadi@autofitcloud.com",
     url='https://gitlab.com/autofitcloud/git-remote-aws',

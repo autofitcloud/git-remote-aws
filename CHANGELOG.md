@@ -1,6 +1,7 @@
 Version 0.3.5 (2019-08-07)
 
 - ENH: readme cleanup
+- ENH: split out developer notes to separate file than README.md
 
 
 Version 0.3.4 (2019-08-07)
