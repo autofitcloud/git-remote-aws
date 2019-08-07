@@ -1,6 +1,7 @@
 from setuptools import setup # , find_packages
 
 # copied from https://github.com/awslabs/git-remote-codecommit/blob/master/setup.py
+import os
 def read(fname):
   return open(os.path.join(os.path.dirname(__file__), fname)).read()
   
