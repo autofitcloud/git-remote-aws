@@ -1,7 +1,13 @@
+Version latest (2019-08-07)
+
+- ENH: moved path of aws catalog from gitRemoteAws.pull into dotman.fn.awsCat
+
+
 Version 0.3.5 (2019-08-07)
 
 - ENH: readme cleanup
 - ENH: split out developer notes to separate file than README.md
+- released on pypi
 
 
 Version 0.3.4 (2019-08-07)

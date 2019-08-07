@@ -24,6 +24,7 @@ class DotMan:
         fn['optimize_region_root'] = os.path.join(fn['root'], 'regions')
         fn['aws_dot'] = os.path.expanduser("~/.aws")
         fn['aws_credentials'] = os.path.join(fn['aws_dot'], 'credentials')
+        fn['awsCat'] = os.path.join(fn['root'], 'www.ec2instances.info')
         return fn
 
     def pull_region_one(self, region):
