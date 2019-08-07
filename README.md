@@ -10,24 +10,75 @@ Published at https://gitlab.com/autofitcloud/git-remote-aws
 ```
 sudo apt-get install git python3 python3-pip
 
-# over ssh if private repo
-pip3 install git+ssh://git@gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
-
-# over https if public repo
-pip3 install git+https://gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
+pip install awscli git-remote-aws
 ```
 
 ## Usage
 
+Configure `awscli` with your AWS key and secret (skip this step if already done)
+
+```
+aws configure
+```
+
 Init a new git repo
 
 ```
-mktemp -d
-cd path/from/above
+TMPDIR=`mktemp -d`
+cd $TMPDIR
 git init
 ```
 
-Add the aws remote for ec2 describe-instances
+Add AWS remotes for EC2 describe-instances, list-metrics, etc.. To use a profile from `~/.aws/credentials` other than the default,
+append `?profile_name=<optional profile name to use>` to the remote URLs below.
+
+```
+git remote add ec2_descInstances  aws+ec2::/describe-instances
+git remote add cw_listMetrics     aws+cw::/list-metrics
+git remote add sns_listTopics     aws+sns::/list-topics
+git remote add cw_getMetricData   aws+cw::/get-metric-data
+git remote add cw_descAlarms      aws+cw::/describe-alarms
+```
+
+Fetch data from all remotes.
+
+```
+git fetch --all
+```
+
+This creates a folder `aws.amazon.com` with a directory structure containing the relevant data
+
+```
+> tree
+.
+└── aws.amazon.com
+    └── us-west-2
+        └── ec2_describeInstances
+        │   ├── i-02432bc7.json
+        │   ├── i-069a7808addd143c7.json
+        │   ├── i-08c802de5accc1e89.json
+        │   ├── i-0e2662888859c5507.json
+        │   ├── i-0fb05d874895a05ec.json
+        │   ├── i-34ca2fc2.json
+        │   └── i-e1ca46eb.json
+        └── ...
+
+4 directories, 11 files
+```
+
+Publish your [open-source infrastructure](https://opensourceinfra.org/)
+
+```
+git add aws.amazon.com
+git commit -m 'first commit'
+
+git remote add origin git@gitlab.com:shadiakiki1986/shadiakiki1986.aws.amazon.com-json.git
+git push -u origin master
+```
+
+## Advanced
+
+The full structure of the remote URLs is as follows
 
 ```
 git remote add example_1 aws+<service>::<endpoint url>/<command>?profile_name=<optional profile name to use>
@@ -35,11 +86,19 @@ git remote add example_1 aws+<service>::<endpoint url>/<command>?profile_name=<o
 
 where
 
-- `service` is one of: `ec2`, `cw` (cloudwatch)
-- `endpoint url` is the AWS endpoint to use (leave blank for the default, or check examples below)
-- `command` can be one of
-    - `describe-instances`
-    - `catalog`
+- `service` is one of: `ec2`, `cw` (cloudwatch), `sns`
+- `endpoint url` is the AWS endpoint to use
+    - leave blank for the default AWS endpoints, or use [moto](http://docs.getmoto.org/en/latest/) for mocked AWS services
+- `command`: depending on the `service` above, this can be
+    - `ec2`:
+        - `describe-instances`
+        - `catalog` (this is not an official AWS service, but is populated from https://www.ec2instances.info. Check related note in "Developer notes" below)
+    - `cw`:
+        - `list-metrics`
+        - `get-metric-data`
+        - `describe-alarms`
+    - `sns`
+        - `list-topics`
 - `profile_name` is the profile name from `~/.aws/credentials`
     - this is optional
     - Only one profile supported at a time (ATM, check [issue #5](https://gitlab.com/autofitcloud/git-remote-aws/issues/5))
@@ -67,31 +126,8 @@ git fetch example_1_ec2
 git fetch example_1_catalog
 ```
 
-This creates a folder "aws" with a directory structure containing the relevant data
 
-```
-> tree
-.
-└── aws
-    ├── us-west-2
-    │   └── ec2_describeInstances
-    │       ├── i-02432bc7.json
-    │       ├── i-069a7808addd143c7.json
-    │       ├── i-08c802de5accc1e89.json
-    │       ├── i-0e2662888859c5507.json
-    │       ├── i-0fb05d874895a05ec.json
-    │       ├── i-34ca2fc2.json
-    │       └── i-e1ca46eb.json
-    └── www.ec2instances.info
-        ├── t0_raw.json
-        ├── t1_processed.json
-        ├── t3a_smaller_familyL1.json
-        └── t3b_smaller_familyL2.json
-
-4 directories, 11 files
-```
-
-## Notes
+## Developer notes
 
 PS: `git fetch aws` will actually create the files in the local directory (unlike a normal `git fetch` which doesn't update the local files)
 
@@ -101,18 +137,6 @@ Save into a subdirectory (doesnt work yet)
 mkdir ec2DescInst
 git worktree add ec2DescInst example_1
 ```
-
-For more data
-```
-git remote add ec2GetMetrics aws://get-metrics.ec2.aws.amazon.com
-git remote add cwDescAlarms aws://describe-alarms.cw.aws.amazon.com
-
-mkdir ec2GetMetrics
-mkdir cwDescAlarms
-```
-
-
-## Developer notes
 
 Install editable python package
 
@@ -169,9 +193,29 @@ References for git remote helpers
 - https://github.com/awslabs/git-remote-codecommit
 
 
-pypi installation notes
+Publish to pypi
 
 ```
 python3 setup.py sdist bdist_wheel
 twine upload dist/*
+```
+
+
+Install git-remote-aws from gitlab
+
+```
+# over ssh if private repo
+pip3 install git+ssh://git@gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
+
+# over https if public repo
+pip3 install git+https://gitlab.com/autofitcloud/git-remote-aws.git@0.1.0
+```
+
+To get AWS EC2 catalog (generates a 23MB file `www.ec2instances.info/t0_raw.json`)
+
+```
+git remote add ec2_catalog        aws+ec2::/catalog
+git fetch ec2_catalog
+
+echo "www.ec2instances.info/t0_raw.json" > .gitignore # useful to avoid checking in a 23MB file
 ```

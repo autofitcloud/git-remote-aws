@@ -1,3 +1,8 @@
+Version 0.3.5 (2019-08-07)
+
+- ENH: readme cleanup
+
+
 Version 0.3.4 (2019-08-07)
 
 - ENH: add description in setup.py
