@@ -1,4 +1,9 @@
-Version latest (2019-08-08)
+Version latest (2019-08-08?)
+
+- ...
+
+
+Version 0.3.7 (2019-08-08)
 
 - ENH: add feature `?fulldata=true` to the `ec2_describeInstances` endpoint
     - this followed from strong criticism on reddit in my post: [Is opensource infrastructure safe?](https://www.reddit.com/r/aws/comments/cn81my/is_opensource_infrastructure_safe/)

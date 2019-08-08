@@ -10,8 +10,8 @@ def read(fname):
 # and https://packaging.python.org/tutorials/packaging-projects/
 setup(
     name='git-remote-aws',
-    version='0.3.6',
-    author="AutofitCloud Technologies, Inc",
+    version='0.3.7',
+    author="Shadi Akiki, AutofitCloud",
     author_email="shadi@autofitcloud.com",
     url='https://gitlab.com/autofitcloud/git-remote-aws',
     description="git remote helper for fetching aws data",
