@@ -1,6 +1,6 @@
 Version latest (2019-08-08?)
 
-- ...
+- ENH: add cases to test
 
 
 Version 0.3.7 (2019-08-08)

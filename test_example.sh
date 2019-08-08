@@ -15,6 +15,8 @@ git init
 # add remotes
 git remote add aws_ec2_describeInstances_1 aws+ec2::/describe-instances
 git remote add aws_ec2_describeInstances_2 aws+ec2::/describe-instances?profile_name=default # try with the profile passing
+git remote add aws_ec2_describeInstances_3a aws+ec2::/describe-instances?fulldata=false # without fulldata (already the default)
+git remote add aws_ec2_describeInstances_3b aws+ec2::/describe-instances?fulldata=true # with fulldata
 git remote add aws_ec2_catalog aws+ec2::/catalog
 git remote add aws_cw_listMetrics aws+cw::/list-metrics
 git remote add aws_cw_descAlarms aws+cw::/describe-alarms
