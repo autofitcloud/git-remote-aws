@@ -66,6 +66,10 @@ This creates a folder `aws.amazon.com` with a directory structure containing the
 4 directories, 11 files
 ```
 
+Note: The default behavior of the `describe-instances` endpoint is to subset the EC2 description to a minimal.
+To get the full EC2 desriptions, append `?fulldata=true` to the endpoint.
+
+
 Publish your [open-source infrastructure](https://opensourceinfra.org/)
 
 ```
@@ -75,6 +79,7 @@ git commit -m 'first commit'
 git remote add origin git@gitlab.com:shadiakiki1986/shadiakiki1986.aws.amazon.com-json.git
 git push -u origin master
 ```
+
 
 ## Advanced
 

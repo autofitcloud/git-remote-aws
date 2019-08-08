@@ -54,15 +54,20 @@ def json_serial(obj):
     raise TypeError ("Type %s not serializable" % type(obj))
 
 
-def get_instDesc(fn, ec2):
+def get_instDesc(fn, ec2, fulldata):
     """
+    fn - dict of local file paths to use
     ec2 - boto3 ec2 client
+    fulldata - boolean, True when all data is to be dumped into the output. False when only the minimal necessary data is needed.
     """
     MaxResults=3000 # FIXME <<<<<<<<<<<<<<<<<<<<<<<<<<<
+    
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_instances
     response_1 = ec2.describe_instances(
         DryRun=False, # False, # True, # |
         MaxResults=MaxResults # 1 # 30
     )
+    
     # https://stackoverflow.com/a/55749807/4126114
     # , ec2.meta.region_name
     response_2 = postprocess_response(response_1)
@@ -72,6 +77,16 @@ def get_instDesc(fn, ec2):
     for ri in tqdm(response_2, desc="Pulling instance desriptions"):
         nr+=1
         if nr==MaxResults: logger.warning("MaxResults=%i attained."%MaxResults)
+        
+        # trim information if not "fulldata"
+        if not fulldata:
+            ri.pop('OwnerId', None)
+            ri.pop('ReservationId', None)
+            ri['InstanceDescription'] = { k: ri['InstanceDescription'][k]
+                                          for k in ri['InstanceDescription'].keys()
+                                          if k in ['CpuOptions', 'InstanceType', 'InstanceId', 'Tags', 'State']
+                                        }
+
         # save instance description
         fn_temp = os.path.join(fn['ec2DescInst'], ri['InstanceId']+'.json')
         # logger.debug("save ec2 desc to %s"%fn_temp)

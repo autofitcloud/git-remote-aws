@@ -1,3 +1,9 @@
+Version latest (2019-08-08)
+
+- ENH: add feature `?fulldata=true` to the `ec2_describeInstances` endpoint
+    - this followed from strong criticism on reddit in my post: [Is opensource infrastructure safe?](https://www.reddit.com/r/aws/comments/cn81my/is_opensource_infrastructure_safe/)
+
+
 Version 0.3.6 (2019-08-07)
 
 - ENH: moved path of aws catalog from gitRemoteAws.pull into dotman.fn.awsCat

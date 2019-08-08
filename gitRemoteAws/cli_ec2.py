@@ -131,7 +131,15 @@ class Ec2Class:
       sys.stderr.write("fatal: %s\n"%str(error))
       sys.exit(70) # internal program error, https://github.com/glandium/git-cinnabar/blob/master/cinnabar/util.py#L916
       
-    get_instDesc(fn, ec2)
+    # check if the user requested "full-data" or just the minimal subset
+    fulldata = False
+    if 'fulldata' in self.remote_parsed:
+      if len(self.remote_parsed['fulldata'])>0:
+        if self.remote_parsed['fulldata'][0].lower()=='true':
+          fulldata=True
+    
+    # get the data
+    get_instDesc(fn, ec2, fulldata)
     
     # json.dump(fn, open('file.txt','w'))
     
