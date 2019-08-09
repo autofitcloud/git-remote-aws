@@ -70,7 +70,7 @@ Note: The default behavior of the `describe-instances` endpoint is to subset the
 To get the full EC2 desriptions, append `?fulldata=true` to the endpoint.
 
 
-Publish your [open-source infrastructure](https://opensourceinfra.org/)
+Push to a git remote
 
 ```
 git add aws.amazon.com
