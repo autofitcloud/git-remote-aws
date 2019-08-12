@@ -153,5 +153,11 @@ git fetch example_1_catalog
 Check `DEVELOPER.md`
 
 
+## Support
 
-Built by [AutofitCloud](https://autofitcloud.com)
+This tool was built by [AutofitCloud](https://autofitcloud.com), an early-stage startup.
+
+If you like this tool and would like to see more like it,
+please support us by signing up at https://autofitcloud.com
+
+We promise not to spam you.
