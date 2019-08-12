@@ -4,6 +4,10 @@ git remote helper for pulling aws data
 
 Published at https://gitlab.com/autofitcloud/git-remote-aws
 
+Post issues at https://gitlab.com/autofitcloud/git-remote-aws/issues
+
+Site at https://git-remote-aws.autofitcloud.com
+
 
 ## Installation
 
@@ -81,6 +85,18 @@ git push -u origin master
 ```
 
 
+## Covered services
+
+Service    | Command
+--------|------
+EC2     | describe-instances
+Cloudwatch   | list-metrics
+Cloudwatch   | get-metric-data
+Cloudwatch   | describe-alarms
+SNS | list-topics
+
+
+
 ## Advanced
 
 The full structure of the remote URLs is as follows
@@ -135,3 +151,7 @@ git fetch example_1_catalog
 ## Developer notes
 
 Check `DEVELOPER.md`
+
+
+
+Built by [AutofitCloud](https://autofitcloud.com)
