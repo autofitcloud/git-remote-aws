@@ -155,7 +155,7 @@ Check `DEVELOPER.md`
 
 ## Support
 
-This tool was built by [AutofitCloud](https://autofitcloud.com), an early-stage startup.
+This tool was built by [AutofitCloud](https://autofitcloud.com), an early-stage startup as of the time of this writing (2019-08-12).
 
 If you like this tool and would like to see more like it,
 please support us by signing up at https://autofitcloud.com
