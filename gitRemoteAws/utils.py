@@ -2,13 +2,11 @@
 # Consult https://click.palletsprojects.com/en/7.x/python3/ for mitigation steps.
 def mygetlocale():
   import locale
-  l_av = [x.lower() for x in locale.locale_alias.values()]                                                                                                                                                              
-  l_pref = ['c.utf-8', 'c.utf8', 'en_us.utf-8', 'en_us.utf8']
-  for li in l_pref:
-    if li in l_av:
-      return li
-      
-  return None
+  l_av = locale.locale_alias.keys()
+  l_pref = ['c.utf8', 'en_US.utf8']
+  l_ok = [x for x in l_pref if x in l_av]
+  if len(l_ok)==0: return None
+  return l_ok[0]
   
 
 def mysetlocale():
