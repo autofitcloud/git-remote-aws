@@ -1,12 +1,14 @@
 # RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment. 
 # Consult https://click.palletsprojects.com/en/7.x/python3/ for mitigation steps.
-import os
-os.environ["LC_ALL"] = "C.UTF-8"
-os.environ["LANG"]   = "C.UTF-8"
+from .utils import mysetlocale
+mysetlocale()
+
+#---------------
 
 # SNS CLI
 # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sns.html#SNS.Paginator.ListTopics
 
+import os
 from urllib.parse import urlparse
 import json
 import sys

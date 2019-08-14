@@ -1,7 +1,13 @@
-Version latest (2019-08-08?)
+Version latest (2019-08-14?)
+
+- ...
+
+
+Version 0.3.8 (2019-08-{08,14})
 
 - ENH: add cases to test
 - ENH: improve docs
+- BUGFIX: check for locale before setting it (faced when deploying on AWS lambda)
 
 
 Version 0.3.7 (2019-08-08)

@@ -1,10 +1,11 @@
 # RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment. 
 # Consult https://click.palletsprojects.com/en/7.x/python3/ for mitigation steps.
+from .utils import mysetlocale
+mysetlocale()
+
+#---------------
+
 import os
-os.environ["LC_ALL"] = "C.UTF-8"
-os.environ["LANG"]   = "C.UTF-8"
-
-
 from urllib.parse import urlparse
 import json
 import sys

@@ -1,8 +1,12 @@
 # RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment. 
 # Consult https://click.palletsprojects.com/en/7.x/python3/ for mitigation steps.
+from .utils import mysetlocale
+mysetlocale()
+
+
 import os
-os.environ["LC_ALL"] = "C.UTF-8"
-os.environ["LANG"]   = "C.UTF-8"
+import logging
+logger = logging.getLogger('git-remote-aws')
 
 
 from urllib.parse import urlparse, parse_qs
@@ -10,14 +14,12 @@ import json
 import sys
 import click
 import boto3
-import logging
 
 from .botoman import SessionMan
 from .pull import get_instDesc, get_awsCat, get_cwDescAlarms
 from .dotman import DotMan
 import copy
 
-logger = logging.getLogger('git-remote-aws')
 
 class Ec2Class:
   def __init__(self, remote_name, remote_url):
