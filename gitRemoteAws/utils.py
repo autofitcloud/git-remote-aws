@@ -1,5 +1,8 @@
 # RuntimeError: Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment. 
 # Consult https://click.palletsprojects.com/en/7.x/python3/ for mitigation steps.
+
+# This sucks because it doesn't work on lambda. Just setting en_US.utf8 blindly
+"""
 def mygetlocale():
   import locale
   l_av = locale.locale_alias.keys()
@@ -19,6 +22,13 @@ def mysetlocale():
   #logger = logging.getLogger('git-remote-aws')
   #logger.warning("Setting locale to %s"%li)
   
+  import os
+  os.environ["LC_ALL"] = li
+  os.environ["LANG"]   = li
+"""
+
+def mysetlocale():
+  li = 'en_US.utf8'
   import os
   os.environ["LC_ALL"] = li
   os.environ["LANG"]   = li
