@@ -211,7 +211,11 @@ def get_cwGetMetricData(fn_dir1, cloudwatch, ec2):
         # collect daily data as well as hourly data
         for n_days, period in [
             (90, seconds_in_one_day),
-            (30, seconds_in_one_hour) # max n points is 1440, so cannot do 90 days with hourly in 1 shot
+            
+            # hourly data
+            # max n points is 1440, so cannot do 90 days with hourly in 1 shot
+            # FIXME comment out since not used yet
+            # (30, seconds_in_one_hour)
             ]:
         
             for stat_i in stat_list:

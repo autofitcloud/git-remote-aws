@@ -2,6 +2,7 @@ Version latest (0.4.0) (2019-08-15)
 
 - FEAT: replace `profile_name` in git remote URL with `boto3_session_kwargs` (JSON containing `profile_name` as one of the keys)
 - BUGFIX: bring back `profile_name` and replace `boto3_session_kwargs` with `boto3_session_config` (JSON file for shorter URLs)
+- ENH: comment out downloading hourly CPU
 
 
 Version 0.3.9 (2019-08-{08,14})
