@@ -33,8 +33,7 @@ cd $TMPDIR
 git init
 ```
 
-Add AWS remotes for EC2 describe-instances, list-metrics, etc.. To use a profile from `~/.aws/credentials` other than the default,
-append `?profile_name=<optional profile name to use>` to the remote URLs below.
+Add AWS remotes for EC2 describe-instances, list-metrics, etc.
 
 ```
 git remote add ec2_descInstances  aws+ec2::/describe-instances
@@ -43,6 +42,14 @@ git remote add sns_listTopics     aws+sns::/list-topics
 git remote add cw_getMetricData   aws+cw::/get-metric-data
 git remote add cw_descAlarms      aws+cw::/describe-alarms
 ```
+
+To use a profile from `~/.aws/credentials` other than the default,
+append `?boto3_session_kwargs={'profile_name': <optional profile name to use>}` to the remote URLs.
+
+Can also append other boto3 Session constructor arguments as documented
+[here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html)
+
+
 
 Fetch data from all remotes.
 
@@ -102,7 +109,7 @@ SNS | list-topics
 The full structure of the remote URLs is as follows
 
 ```
-git remote add example_1 aws+<service>::<endpoint url>/<command>?profile_name=<optional profile name to use>
+git remote add example_1 aws+<service>::<endpoint url>/<command>?boto3_session_kwargs={'profile_name': <optional profile name to use>, ... (other session arguments) }
 ```
 
 where
@@ -120,9 +127,11 @@ where
         - `describe-alarms`
     - `sns`
         - `list-topics`
-- `profile_name` is the profile name from `~/.aws/credentials`
+- `boto3_session_kwargs` is a json-encoded dictionary of key-value pairs corresponding to boto3 session constructor arguments
     - this is optional
-    - Only one profile supported at a time (ATM, check [issue #5](https://gitlab.com/autofitcloud/git-remote-aws/issues/5))
+    - documentation for boto3 session is [here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html)
+    - for example, `profile_name` is the profile name from `~/.aws/credentials`
+    - Only one `boto3_session_kwargs` is supported at a time ATM, check [issue #5](https://gitlab.com/autofitcloud/git-remote-aws/issues/5)
 
 
 Examples
@@ -137,7 +146,7 @@ git remote add example_1_cwListMetrics aws+cw::/list-metrics
 git remote add example_3 aws+ec2::http://ec2.us-west-2.amazonaws.com/describe-instances
 
 # use a specific profile and AWS default endpoints
-git remote add example_2 aws+ec2::profile@/describe-instances
+git remote add example_2 aws+ec2::/describe-instances?boto3_session_kwargs={'profile_name': profile}
 ```
 
 Pull the data

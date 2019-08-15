@@ -14,7 +14,8 @@ import boto3
 import logging
 
 from .cli_ec2 import Ec2Class, cli_core
-from .pull import SessionMan, get_cwDescAlarms, get_cwListMetrics, get_cwGetMetricData
+# from .pull import SessionMan
+from .pull import get_cwDescAlarms, get_cwListMetrics, get_cwGetMetricData
 from .dotman import DotMan
 import copy
 

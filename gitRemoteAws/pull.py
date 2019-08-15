@@ -2,7 +2,7 @@
 # and modified as needed
 
 from botocore.exceptions import ClientError
-from .botoman import SessionMan
+# from .botoman import SessionMan
 import importlib
 import yaml
 import os

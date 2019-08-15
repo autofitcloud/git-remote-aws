@@ -55,14 +55,17 @@ class Ec2Class:
     self.dm = DotMan()
 
     # identify profile name from remote query
-    profile_name = None
-    if 'profile_name' in self.remote_query:
-      if len(self.remote_query['profile_name'])>0:
-        # only take the first entry ATM, check https://gitlab.com/autofitcloud/git-remote-aws/issues/5
-        profile_name=self.remote_query['profile_name'][0] 
+    boto3_session_kwargs = self.remote_query.get('boto3_session_kwargs', [])
+    if len(boto3_session_kwargs)==0:
+      boto3_session_kwargs = {}
+    else:
+      # only take the first entry ATM, check https://gitlab.com/autofitcloud/git-remote-aws/issues/5
+      # logger.warning("boto3_session_kwargs", boto3_session_kwargs)
+      boto3_session_kwargs=json.loads(boto3_session_kwargs[0])
+      sys.exit(1)
     
     # get region https://stackoverflow.com/a/37519906/4126114
-    self.session = SessionMan(self.dm, profile_name=profile_name)
+    self.session = SessionMan(self.dm, boto3_session_kwargs=boto3_session_kwargs)
     self.my_region = self.session.getSession().region_name
     #region_name is basically defined as session.get_config_variable('region')
     # logger.debug("sts region", my_region)
@@ -76,7 +79,7 @@ class Ec2Class:
 
   def list(self):
     logger.debug('ec2class.list')
-    profile_name = self.remote_parsed.username or 'default'
+    # profile_name = self.remote_parsed.username or 'default'
     
     # Debugging to file since stdout from this script does not go to terminal after git pull
     # Only the exit code survives.
