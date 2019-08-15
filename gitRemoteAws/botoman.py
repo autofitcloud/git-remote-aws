@@ -7,6 +7,7 @@ import yaml
 import os
 from botocore.exceptions import ProfileNotFound
 import sys
+import json
 import logging
 logger = logging.getLogger("git-remote-aws")
 
@@ -14,28 +15,33 @@ class SessionMan:
     """
     Manager of boto3 calls
     """
-    def __init__(self, dm=None, boto3_session_kwargs=None):
+    def __init__(self, dm=None, profile_name=None, boto3_session_config=None):
         """
         dm - instance of dotman.DotMan
-        boto3_session_kwargs - dict of fields passed to boto3 session constructor
-                               This includes profile_name, name of profile in ~/.aws/credentials
+        profile_name - name of profile  in ~/.aws/credentials
+        boto3_session_config - filepath to json file of fields passed to boto3 session constructor
                                https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html
         """
         
         self.dm = dm
-        self.boto3_session_kwargs = boto3_session_kwargs or {}
+        self.profile_name = profile_name
+        self.boto3_session_config = boto3_session_config
 
 
     def getSession(self):
         """
-        Wrap call to "boto3.session" to pass profile from config
+        Wrap call to "boto3.session" to pass arguments
         https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html?highlight=boto3.session.session.client#boto3.session.Session.client
 
         Also
         https://stackoverflow.com/a/42818143/4126114
         """
+        boto3_session_kwargs = {}
+        if self.boto3_session_config:
+            boto3_session_kwargs = json.load(open(self.boto3_session_config, 'r'))
+            
         try:
-            return boto3.session.Session(**(self.boto3_session_kwargs))
+            return boto3.session.Session(profile_name=self.profile_name, **(boto3_session_kwargs))
         except ProfileNotFound as error:
             logger.error("fatal: %s"%str(error))
 

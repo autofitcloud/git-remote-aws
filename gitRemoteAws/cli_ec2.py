@@ -53,19 +53,20 @@ class Ec2Class:
 
     # more class members
     self.dm = DotMan()
-
-    # identify profile name from remote query
-    boto3_session_kwargs = self.remote_query.get('boto3_session_kwargs', [])
-    if len(boto3_session_kwargs)==0:
-      boto3_session_kwargs = {}
-    else:
-      # only take the first entry ATM, check https://gitlab.com/autofitcloud/git-remote-aws/issues/5
-      # logger.warning("boto3_session_kwargs", boto3_session_kwargs)
-      boto3_session_kwargs=json.loads(boto3_session_kwargs[0])
-      sys.exit(1)
     
+    def get_qs_first(k):
+      # identify boto3 session config file
+      v = self.remote_query.get(k, [])
+      if len(v)==0: return None
+      # only take the first entry ATM, check https://gitlab.com/autofitcloud/git-remote-aws/issues/5
+      return v[0]
+
+    # identify useful arguments from remote query
+    profile_name = get_qs_first('profile')
+    boto3_session_config = get_qs_first('boto3_session_config')
+
     # get region https://stackoverflow.com/a/37519906/4126114
-    self.session = SessionMan(self.dm, boto3_session_kwargs=boto3_session_kwargs)
+    self.session = SessionMan(self.dm, profile_name=profile_name, boto3_session_config=boto3_session_config)
     self.my_region = self.session.getSession().region_name
     #region_name is basically defined as session.get_config_variable('region')
     # logger.debug("sts region", my_region)
