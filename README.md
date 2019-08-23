@@ -1,15 +1,16 @@
 # git-remote-aws [![PyPI version](https://badge.fury.io/py/git-remote-aws.svg)](https://badge.fury.io/py/git-remote-aws)
 
-git remote helper for pulling aws data
+`git-remote-aws` is a [git remote helper](https://git-scm.com/docs/git-remote-helpers) for pulling AWS data just like pulling from a Git remote.
 
-Published at
+Repository published on [Gitlab](https://gitlab.com/autofitcloud/git-remote-aws) and [Github](https://github.com/autofitcloud/git-remote-aws)
 
-- https://gitlab.com/autofitcloud/git-remote-aws
-- https://github.com/autofitcloud/git-remote-aws
+Website published at https://git-remote-aws.autofitcloud.com
 
-Site at https://git-remote-aws.autofitcloud.com
-
-News 2019-08-23: I had posted this project on [r/git](https://www.reddit.com/r/git/comments/ctxcq8/gitremoteaws_aws_accounts_as_git_remotes/) last night, only to wake up this morning and find it on top of the subreddit! r/git is awesome! [Screenshot](https://imgur.com/gallery/4PB2BeY)
+~News 2019-08-23~:
+I had posted this project on [r/git](https://www.reddit.com/r/git/comments/ctxcq8/gitremoteaws_aws_accounts_as_git_remotes/) last night,
+only to wake up this morning and find it on top of the subreddit!
+r/git is awesome!
+[Screenshot](https://imgur.com/gallery/4PB2BeY)
 
 
 ## Installation
