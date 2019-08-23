@@ -12,6 +12,9 @@ only to wake up this morning and find it on top of the subreddit!
 r/git is awesome!
 [Screenshot](https://imgur.com/gallery/4PB2BeY)
 
+<i>More news 2019-08-23:</i>
+Apparently my cross-post to [r/aws](https://www.reddit.com/r/aws/comments/cu2llv/gitremoteaws_aws_accounts_as_git_remotes/) also made it to #3 overnight! [Screenshot](https://imgur.com/gallery/ndtJ4wc)
+
 
 ## Installation
 
