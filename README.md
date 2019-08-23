@@ -9,6 +9,8 @@ Published at
 
 Site at https://git-remote-aws.autofitcloud.com
 
+News 2019-08-23: I had posted this project on [r/git](https://www.reddit.com/r/git/comments/ctxcq8/gitremoteaws_aws_accounts_as_git_remotes/) last night, only to wake up this morning and find it on top of the subreddit! r/git is awesome! [Screenshot](https://imgur.com/gallery/4PB2BeY)
+
 
 ## Installation
 
