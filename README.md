@@ -6,7 +6,7 @@ Repository published on [Gitlab](https://gitlab.com/autofitcloud/git-remote-aws)
 
 Website published at https://git-remote-aws.autofitcloud.com
 
-~News 2019-08-23~:
+<i>News 2019-08-23:</i>
 I had posted this project on [r/git](https://www.reddit.com/r/git/comments/ctxcq8/gitremoteaws_aws_accounts_as_git_remotes/) last night,
 only to wake up this morning and find it on top of the subreddit!
 r/git is awesome!
