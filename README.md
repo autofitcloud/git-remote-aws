@@ -195,8 +195,4 @@ Over and out!
 
 --
 
-Shadi Akiki
-
-[gitlab profile](https://gitlab.com/shadiakiki1986)
-
-[github profile](https://github.com/shadiakiki1986)
+[u/shadiakiki1986](https://www.reddit.com/user/shadiakiki1986)
