@@ -2,9 +2,10 @@
 
 git remote helper for pulling aws data
 
-Published at https://gitlab.com/autofitcloud/git-remote-aws
+Published at
 
-Post issues at https://gitlab.com/autofitcloud/git-remote-aws/issues
+- https://gitlab.com/autofitcloud/git-remote-aws
+- https://github.com/autofitcloud/git-remote-aws
 
 Site at https://git-remote-aws.autofitcloud.com
 
@@ -17,7 +18,7 @@ sudo apt-get install git python3 python3-pip
 pip install awscli git-remote-aws
 ```
 
-## Usage
+## Basic Usage
 
 Configure `awscli` with your AWS key and secret (skip this step if already done)
 
@@ -36,28 +37,12 @@ git init
 Add AWS remotes for EC2 describe-instances, list-metrics, etc.
 
 ```
-git remote add ec2_descInstances  aws+ec2::/describe-instances
-git remote add cw_listMetrics     aws+cw::/list-metrics
-git remote add sns_listTopics     aws+sns::/list-topics
-git remote add cw_getMetricData   aws+cw::/get-metric-data
 git remote add cw_descAlarms      aws+cw::/describe-alarms
+git remote add cw_getMetricData   aws+cw::/get-metric-data
+git remote add cw_listMetrics     aws+cw::/list-metrics
+git remote add ec2_descInstances  aws+ec2::/describe-instances
+git remote add sns_listTopics     aws+sns::/list-topics
 ```
-
-To use a profile from `~/.aws/credentials` other than the default,
-append `?profile=<optional profile name to use>` to the remote URLs.
-
-To append other boto3 Session constructor arguments as documented
-[here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html),
-append `?boto3_session_config=path/to/file` to the remote URLs,
-where `path/to/file` points to a JSON file containing the arguments from the boto3 session constructor.
-
-For example,
-
-```
-{ "aws_access_key_id": "ABC", "aws_secret_access_key": "ABC", ...}
-```
-
-
 
 Fetch data from all remotes.
 
@@ -85,9 +70,34 @@ This creates a folder `aws.amazon.com` with a directory structure containing the
 4 directories, 11 files
 ```
 
+
+## Advanced Usage
+
+### awscli profiles
+
+To use a profile from `~/.aws/credentials` other than the default,
+append `?profile=<optional profile name to use>` to the remote URLs.
+
+
+### boto3 options
+
+To append other boto3 Session constructor arguments as documented
+[here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/core/session.html),
+append `?boto3_session_config=path/to/file` to the remote URLs,
+where `path/to/file` points to a JSON file containing the arguments from the boto3 session constructor.
+
+For example,
+
+```
+{ "aws_access_key_id": "ABC", "aws_secret_access_key": "ABC", ...}
+```
+
+
 Note: The default behavior of the `describe-instances` endpoint is to subset the EC2 description to a minimal.
 To get the full EC2 desriptions, append `?fulldata=true` to the endpoint.
 
+
+### git push remotes
 
 Push to a git remote
 
@@ -112,7 +122,7 @@ SNS | list-topics
 
 
 
-## Advanced
+### AWS/Moto endpoints
 
 The full structure of the remote URLs is as follows
 
@@ -173,9 +183,17 @@ Check `DEVELOPER.md`
 
 ## Support
 
-This tool was built by [AutofitCloud](https://autofitcloud.com), an early-stage startup as of the time of this writing (2019-08-12).
+I built `git-remote-aws` as part of the workflow behind [AutofitCloud](https://autofitcloud.com), the early-stage startup that I'm founding, seeking to cut cloud waste on our planet.
 
-If you like this tool and would like to see it developed further,
-please support us by signing up at https://autofitcloud.com
+If you like `git-remote-aws` and would like to see it developed further,
+please support me by signing up at https://autofitcloud.com
 
-We promise not to spam you.
+Over and out!
+
+--
+
+Shadi Akiki
+
+[gitlab profile](https://gitlab.com/shadiakiki1986)
+
+[github profile](https://github.com/shadiakiki1986)
