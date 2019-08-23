@@ -1,6 +1,6 @@
 # git-remote-aws [![PyPI version](https://badge.fury.io/py/git-remote-aws.svg)](https://badge.fury.io/py/git-remote-aws)
 
-`git-remote-aws` is a [git remote helper](https://git-scm.com/docs/git-remote-helpers) for pulling AWS data just like pulling from a Git remote.
+`git-remote-aws` is a [git remote helper](https://git-scm.com/docs/git-remote-helpers) for pulling data from an AWS account just like pulling from a Git remote.
 
 Repository published on [Gitlab](https://gitlab.com/autofitcloud/git-remote-aws) and [Github](https://github.com/autofitcloud/git-remote-aws)
 
