@@ -6,6 +6,8 @@ Repository published on [Gitlab](https://gitlab.com/autofitcloud/git-remote-aws)
 
 Website published at https://git-remote-aws.autofitcloud.com
 
+Check the wishlist at the bottom of this readme for future plans.
+
 <i>News 2019-08-23:</i>
 I had posted this project on [r/git](https://www.reddit.com/r/git/comments/ctxcq8/gitremoteaws_aws_accounts_as_git_remotes/) last night,
 only to wake up this morning and find it on top of the subreddit!
@@ -185,6 +187,14 @@ git fetch example_1_catalog
 ## Developer notes
 
 Check `DEVELOPER.md`
+
+
+## Wishlist
+
+Here is a list of features that were brought up from reddit [r/git](https://www.reddit.com/r/git/comments/ctxcq8/gitremoteaws_aws_accounts_as_git_remotes/exsu7bs/?context=3) and [r/aws](https://www.reddit.com/r/aws/comments/cu2llv/gitremoteaws_aws_accounts_as_git_remotes/)
+
+- [Issue #1](https://github.com/autofitcloud/git-remote-aws/issues/1): Add push capability to the aws+ec2://describe-instances remote
+- [Issue #2](https://github.com/autofitcloud/git-remote-aws/issues/2): git fetch should build a history when possible
 
 
 ## Support
