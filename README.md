@@ -193,6 +193,4 @@ please support me by signing up at https://autofitcloud.com
 
 Over and out!
 
---
-
-[u/shadiakiki1986](https://www.reddit.com/user/shadiakiki1986)
+--[u/shadiakiki1986](https://www.reddit.com/user/shadiakiki1986)
