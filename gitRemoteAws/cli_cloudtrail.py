@@ -55,6 +55,9 @@ class CloudtrailClass(Ec2Class):
     dirroot = self.dm.cloudtrailLookupEvents(self.my_region)
     #logger.debug("mkdir %s"%dirroot)
     os.makedirs(dirroot, exist_ok=True)
+    
+    dirEc2TypeChanges = os.path.join(dirroot, "ec2TypeChanges")
+    os.makedirs(dirEc2TypeChanges, exist_ok=True)
 
     # get instance descriptions
     cloudtrail = self.session.client('cloudtrail')
@@ -66,10 +69,16 @@ class CloudtrailClass(Ec2Class):
       # get instance descriptions
       logger.debug('Cloning AWS Cloudtrail lookup-events for ec2 type changes')
 
-      df = man3.ec2_typeChanges()
-      csvName = os.path.join(dirroot, "ec2TypeChanges.csv")
-      df.to_csv(csvName)
-      return
+      df_all = man3.ec2_typeChanges()
+        
+      # list of instance IDs
+      iid_all = set(df_all.reset_index()['instanceId'].tolist())
+      for instance_id in iid_all:
+        df_sub = df_all.loc[instance_id]
+        csvName = os.path.join(dirroot, "ec2TypeChanges", instance_id + ".csv")
+        df_sub.to_csv(csvName)
+        
+      return # done
 
     logger.warning("filter not supported. Skipping: %s"%filterName)
 

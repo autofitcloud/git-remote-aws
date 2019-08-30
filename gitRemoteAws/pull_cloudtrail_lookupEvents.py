@@ -164,9 +164,12 @@ class GeneralManager:
         iterator_mod = man2_mod.getIterator(self.client)
         r_mod = man2_mod.handleIterator(iterator_mod)
         
+        # split on instance ID and gather
         r_all = r_run + r_mod
+        # logging.error(r_all)
         df = pd.DataFrame(r_all)
         df = df.set_index(["instanceId", "EventTime"]).sort_index()
+        
         return df
 
 

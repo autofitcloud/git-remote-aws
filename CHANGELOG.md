@@ -1,6 +1,7 @@
 Version latest (to be tagged as 0.5.1) (2019-08-30, ...)
 
 - FEAT: use RunInstance event name on top of ModifyInstanceAttribute to get the initial instance type
+- ENH: ec2 type changes to be stored one csv file per instance
 
 
 Version 0.5.0 (2019-08-30)
