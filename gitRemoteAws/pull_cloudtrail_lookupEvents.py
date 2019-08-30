@@ -58,14 +58,18 @@ class Ec2Typechanges:
         # go back x time
         # https://stackoverflow.com/a/38795526/4126114
         # StartTime=dt.datetime.now() - relativedelta(years=1)
-        StartTime=dt.datetime.now() - relativedelta(days=90)
+        # StartTime=dt.datetime.now() - relativedelta(days=90)
         PaginationConfig={
           'MaxResults': 3000
         }
 
         # client = boto3.client('cloudtrail')
         cp = client.get_paginator(operation_name="lookup_events")
-        iterator = cp.paginate(LookupAttributes=LookupAttributes, StartTime=StartTime, PaginationConfig=PaginationConfig)
+        iterator = cp.paginate(
+          LookupAttributes=LookupAttributes, 
+          #StartTime=StartTime, 
+          PaginationConfig=PaginationConfig
+        )
         return iterator
 
 
