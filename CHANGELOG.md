@@ -1,9 +1,4 @@
-Version latest (0.5.1) (2019-08-30?)
-
-- ...
-
-
-Version 0.5.1 (2019-08-30)
+Version latest (to be tagged as 0.5.1) (2019-08-30, ...)
 
 - FEAT: use RunInstance event name on top of ModifyInstanceAttribute to get the initial instance type
 
