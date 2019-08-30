@@ -1,6 +1,11 @@
-Version latest (0.4.1) (2019-08-15?)
+Version latest (0.5.1) (2019-08-30?)
 
 - ...
+
+
+Version 0.5.0 (2019-08-30)
+
+- FEAT: add cloutrail endpoint for lookup-events with custom filter for ec2 type changes
 
 
 Version 0.4.0 (2019-08-15)
