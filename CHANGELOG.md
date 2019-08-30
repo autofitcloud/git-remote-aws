@@ -3,6 +3,11 @@ Version latest (0.5.1) (2019-08-30?)
 - ...
 
 
+Version 0.5.1 (2019-08-30)
+
+- FEAT: use RunInstance event name on top of ModifyInstanceAttribute to get the initial instance type
+
+
 Version 0.5.0 (2019-08-30)
 
 - FEAT: add cloutrail endpoint for lookup-events with custom filter for ec2 type changes

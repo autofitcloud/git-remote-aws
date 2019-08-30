@@ -13,7 +13,7 @@ from dateutil.relativedelta import relativedelta
 import boto3
 from tqdm import tqdm
 import json
-
+import logging
 
 #------------------------------
 # utility to serialize date
@@ -39,14 +39,20 @@ import json
 
 #----------------------------------------
 class Ec2Typechanges:
+  
+    def __init__(self, eventName):
+      self.eventName = eventName
 
     # get paginator
     def getIterator(self, client):
+        """
+        eventName - eg 'ModifyInstanceAttribute'
+        """
         # arguments to lookup-events command
         # From docs: "Currently the list can contain only one item"
         LookupAttributes=[
         #    {'AttributeKey': 'EventSource', 'AttributeValue': 'ec2.amazonaws.com'},
-            {'AttributeKey': 'EventName', 'AttributeValue': 'ModifyInstanceAttribute'},
+            {'AttributeKey': 'EventName', 'AttributeValue': self.eventName},
         ]
 
         # go back x time
@@ -72,14 +78,46 @@ class Ec2Typechanges:
 
         # print(response.keys())
         for event in response['Events']:
-          result = self._handleEvent(event)
+          result = self._handleEventAny(event)
           if result is None: continue
           r_all.append(result)
 
       return r_all
 
 
-    def _handleEvent(self, event):
+    def _handleEventAny(self, event):
+        if self.eventName == 'RunInstances':
+          return self._handleEventRun(event)
+          
+        if self.eventName == 'ModifyInstanceAttribute':
+          return self._handleEventModify(event)
+          
+        raise ValueError("Unsupported event name %s"%self.eventName)
+      
+      
+    def _handleEventRun(self, event):
+          #logging.error(event)
+          #return
+        
+          instanceId = [x for x in event['Resources'] if x['ResourceType']=='AWS::EC2::Instance'][0]['ResourceName']
+
+          ce_dict = json.loads(event['CloudTrailEvent'])
+          newType = ce_dict['requestParameters']['instanceType']
+
+          ts_obj = event['EventTime']
+          # ts_obj = dt.datetime.utcfromtimestamp(ts_int)
+          # ts_str = ts_obj.strftime('%Y-%m-%d %H:%M:%S')
+
+          result = {
+            'EventTime': ts_obj,  # ts_str,
+            'instanceId': instanceId,
+            'instanceType': newType,
+          }
+
+          return result
+          
+          
+    def _handleEventModify(self, event):
           ce_dict = json.loads(event['CloudTrailEvent'])
           rp_dict = ce_dict['requestParameters']
           newType = None
@@ -89,6 +127,7 @@ class Ec2Typechanges:
           #  newType = jmespath.search('attributeName==`instanceType`', rp_dict)
 
           if 'instanceType' in rp_dict:
+            # logging.error(json.dumps(rp_dict))
             newType = rp_dict['instanceType']['value']
 
           if 'attribute' in rp_dict:
@@ -100,10 +139,10 @@ class Ec2Typechanges:
 
           ts_obj = event['EventTime']
           # ts_obj = dt.datetime.utcfromtimestamp(ts_int)
-          ts_str = ts_obj.strftime('%Y-%m-%d %H:%M:%S')
+          # ts_str = ts_obj.strftime('%Y-%m-%d %H:%M:%S')
 
           result = {
-            'EventTime': ts_str,
+            'EventTime': ts_obj, # ts_str,
             'instanceId': rp_dict['instanceId'],
             'instanceType': newType,
           }
@@ -117,9 +156,15 @@ class GeneralManager:
         
     def ec2_typeChanges(self):
         import pandas as pd
-        man2 = Ec2Typechanges()
-        iterator = man2.getIterator(self.client)
-        r_all = man2.handleIterator(iterator)
+        man2_run = Ec2Typechanges(eventName='RunInstances')
+        iterator_run = man2_run.getIterator(self.client)
+        r_run = man2_run.handleIterator(iterator_run)
+        
+        man2_mod = Ec2Typechanges(eventName='ModifyInstanceAttribute')
+        iterator_mod = man2_mod.getIterator(self.client)
+        r_mod = man2_mod.handleIterator(iterator_mod)
+        
+        r_all = r_run + r_mod
         df = pd.DataFrame(r_all)
         df = df.set_index(["instanceId", "EventTime"]).sort_index()
         return df
