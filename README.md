@@ -45,6 +45,7 @@ git init
 Add AWS remotes for EC2 describe-instances, list-metrics, etc.
 
 ```
+git remote add ctle_ec2Typechanges      aws+cloudtrail::/lookup-events?filter=ec2TypeChanges
 git remote add cw_descAlarms      aws+cw::/describe-alarms
 git remote add cw_getMetricData   aws+cw::/get-metric-data
 git remote add cw_listMetrics     aws+cw::/list-metrics

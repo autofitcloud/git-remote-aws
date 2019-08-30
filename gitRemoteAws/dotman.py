@@ -59,3 +59,7 @@ class DotMan:
         
     def snsListTopics(self, region):
         return os.path.join(self.pull_region_one(region), 'snsListTopics')
+
+    def cloudtrailLookupEvents(self, region):
+        return os.path.join(self.pull_region_one(region), 'cloudtrail_lookupEvents')
+

@@ -10,7 +10,7 @@ def read(fname):
 # and https://packaging.python.org/tutorials/packaging-projects/
 setup(
     name='git-remote-aws',
-    version='0.4.0',
+    version='0.5.0',
     author="Shadi Akiki, AutofitCloud",
     author_email="shadi@autofitcloud.com",
     url='https://gitlab.com/autofitcloud/git-remote-aws',
@@ -36,5 +36,6 @@ setup(
         git-remote-aws+ec2=gitRemoteAws.cli_ec2:cli
         git-remote-aws+cw=gitRemoteAws.cli_cw:cli
         git-remote-aws+sns=gitRemoteAws.cli_sns:cli
+        git-remote-aws+cloudtrail=gitRemoteAws.cli_cloudtrail:cli
     ''',
 )

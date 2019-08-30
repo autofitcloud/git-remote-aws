@@ -24,7 +24,7 @@ logger = logging.getLogger('git-remote-aws')
 class CwClass(Ec2Class):
 
   def list(self):
-    logger.debug('ec2class.list')
+    logger.debug('cloudwatchclass.list')
     profile_name = self.remote_parsed.username or 'default'
     
     # Debugging to file since stdout from this script does not go to terminal after git pull

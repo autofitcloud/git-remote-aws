@@ -54,15 +54,8 @@ class Ec2Class:
     # more class members
     self.dm = DotMan()
     
-    def get_qs_first(k):
-      # identify boto3 session config file
-      v = self.remote_query.get(k, [])
-      if len(v)==0: return None
-      # only take the first entry ATM, check https://gitlab.com/autofitcloud/git-remote-aws/issues/5
-      return v[0]
-
     # identify useful arguments from remote query
-    profile_name = get_qs_first('profile')
+    profile_name = self.get_qs_first('profile')
     boto3_session_config = get_qs_first('boto3_session_config')
 
     # get region https://stackoverflow.com/a/37519906/4126114
@@ -76,6 +69,13 @@ class Ec2Class:
         logger.error("Are you sure you configured awscli? Check files in %s"%self.dm.fn['aws_dot'])
         sys.exit(1)
 
+
+  def get_qs_first(self, k):
+      # identify boto3 session config file
+      v = self.remote_query.get(k, [])
+      if len(v)==0: return None
+      # only take the first entry ATM, check https://gitlab.com/autofitcloud/git-remote-aws/issues/5
+      return v[0]
 
 
   def list(self):
