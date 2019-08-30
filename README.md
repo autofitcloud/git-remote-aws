@@ -34,6 +34,14 @@ Configure `awscli` with your AWS key and secret (skip this step if already done)
 aws configure
 ```
 
+The role or user for the configuration should have a subset (or all) of the following policies attached
+
+```
+AmazonEC2ReadOnlyAccess
+AWSCloudTrailReadOnlyAccess
+CloudWatchReadOnlyAccess
+```
+
 Init a new git repo
 
 ```
@@ -121,14 +129,26 @@ git push -u origin master
 
 ## Covered services
 
-Service    | Command
---------|------
-EC2     | describe-instances
-Cloudwatch   | list-metrics
-Cloudwatch   | get-metric-data
-Cloudwatch   | describe-alarms
-SNS | list-topics
+The following AWS services are currently covered
 
+Service    | Command | Notes
+--------|------|------
+EC2     | describe-instances | -
+Cloudtrail | lookup-events | Custom filter of results for EC2 instance type changes.
+Cloudwatch   | list-metrics | -
+Cloudwatch   | get-metric-data | -
+Cloudwatch   | describe-alarms | -
+SNS | list-topics | -
+
+
+Required policies/permissions per service
+
+Service    | Policy
+--------|------
+EC2     | AmazonEC2ReadOnlyAccess
+Cloudtrail | AWSCloudTrailReadOnlyAccess
+Cloudwatch | CloudWatchReadOnlyAccess
+SNS | -
 
 
 ### AWS/Moto endpoints
