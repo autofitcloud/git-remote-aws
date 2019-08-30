@@ -56,7 +56,7 @@ class Ec2Class:
     
     # identify useful arguments from remote query
     profile_name = self.get_qs_first('profile')
-    boto3_session_config = get_qs_first('boto3_session_config')
+    boto3_session_config = self.get_qs_first('boto3_session_config')
 
     # get region https://stackoverflow.com/a/37519906/4126114
     self.session = SessionMan(self.dm, profile_name=profile_name, boto3_session_config=boto3_session_config)

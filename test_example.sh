@@ -22,6 +22,7 @@ git remote add aws_cw_listMetrics aws+cw::/list-metrics
 git remote add aws_cw_descAlarms aws+cw::/describe-alarms
 git remote add aws_cw_getMetricData aws+cw::/get-metric-data
 git remote add aws_sns_listTopics aws+sns::/list-topics
+git remote add aws_ctle_ec2TypeChanges aws+cloudtrail::/lookup-events?filter=ec2TypeChanges
 git remote -v
 
 # fetch individually or all

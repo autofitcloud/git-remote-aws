@@ -67,7 +67,7 @@ class CloudtrailClass(Ec2Class):
       logger.debug('Cloning AWS Cloudtrail lookup-events for ec2 type changes')
 
       df = man3.ec2_typeChanges()
-      csvName = os.path.join(fn['cloudtrailLookupEvents'], "ec2TypeChanges.csv")
+      csvName = os.path.join(dirroot, "ec2TypeChanges.csv")
       df.to_csv(csvName)
       return
 
