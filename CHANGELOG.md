@@ -3,6 +3,11 @@ Version latest (to be tagged as 0.5.2) (...)
 - ...
 
 
+Version 0.5.2 (2019-09-03)
+
+- FEAT: bump version for issue with pypi rendering markdown with table
+
+
 Version 0.5.1 (2019-08-30, 2019-09-03)
 
 - FEAT: use RunInstance event name on top of ModifyInstanceAttribute to get the initial instance type

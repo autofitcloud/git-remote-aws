@@ -10,14 +10,20 @@ def read(fname):
 # and https://packaging.python.org/tutorials/packaging-projects/
 setup(
     name='git-remote-aws',
-    version='0.5.1',
+    version='0.5.2',
     author="Shadi Akiki, AutofitCloud",
     author_email="shadi@autofitcloud.com",
     url='https://gitlab.com/autofitcloud/git-remote-aws',
     description="git remote helper for fetching aws data",
-    long_description = read('README.md'),
-    long_description_content_type="text/markdown",
     
+    # 2019-09-03: for some reason, this yields an error when publishing to pypi
+    # The error is that pypi is wrongly assuming the long_description content is restructuredtxt
+    # Maybe it's because of the tables in the markdown?
+    # Anyway, working around this for now.
+    # long_description = read('README.md'),
+    # long_description_content_type="text/markdown",
+    long_description = "Check https://gitlab.com/autofitcloud/git-remote-aws",
+
     # packages=find_packages(),
     packages = ['gitRemoteAws'],
     include_package_data=True,
