@@ -34,6 +34,7 @@ def mysetlocale():
   os.environ["LANG"]   = li
 
 
+import datetime as dt
 def json_serial(obj):
     """
     JSON serializer for objects not serializable by default json code
