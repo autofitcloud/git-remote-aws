@@ -3,6 +3,7 @@ Version latest (to be tagged as 0.5.1) (2019-08-30, ...)
 - FEAT: use RunInstance event name on top of ModifyInstanceAttribute to get the initial instance type
 - ENH: ec2 type changes to be stored one csv file per instance
 - BUGFIX: no longer passing "StartTime" to cloudtrail history of ec2 type changes
+- ENH: factor out `pull.py` into `pull_{ec2,cloudwatch,sns}.py`
 
 
 Version 0.5.0 (2019-08-30)
