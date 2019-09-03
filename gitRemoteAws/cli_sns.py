@@ -17,7 +17,7 @@ import boto3
 import logging
 
 from .cli_ec2 import Ec2Class, cli_core
-from .pull import get_sns_listTopics
+from .pull_sns import get_sns_listTopics
 from .dotman import DotMan
 import copy
 

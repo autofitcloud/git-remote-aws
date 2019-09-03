@@ -32,3 +32,14 @@ def mysetlocale():
   import os
   os.environ["LC_ALL"] = li
   os.environ["LANG"]   = li
+
+
+def json_serial(obj):
+    """
+    JSON serializer for objects not serializable by default json code
+    http://stackoverflow.com/questions/11875770/ddg#22238613
+    """
+    if isinstance(obj, (dt.datetime, dt.date)):
+        return obj.isoformat()
+    raise TypeError ("Type %s not serializable" % type(obj))
+

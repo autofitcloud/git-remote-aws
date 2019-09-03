@@ -16,7 +16,7 @@ import click
 import boto3
 
 from .botoman import SessionMan
-from .pull import get_instDesc, get_awsCat, get_cwDescAlarms
+from .pull_ec2 import get_instDesc, get_awsCat
 from .dotman import DotMan
 import copy
 
