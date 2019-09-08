@@ -8,6 +8,9 @@ Website published at https://git-remote-aws.autofitcloud.com
 
 Check the wishlist at the bottom of this readme for future plans.
 
+Vote for features on the [git-remote-aws public trello board](https://trello.com/b/szNMyNYJ/git-remote-aws).
+
+
 <i>News 2019-08-23:</i>
 I had posted this project on [r/git](https://www.reddit.com/r/git/comments/ctxcq8/gitremoteaws_aws_accounts_as_git_remotes/) last night,
 only to wake up this morning and find it on top of the subreddit!
