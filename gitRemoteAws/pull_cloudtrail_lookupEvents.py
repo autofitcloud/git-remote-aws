@@ -172,6 +172,11 @@ class GeneralManager:
         r_all = r_run + r_mod
         # logging.error(r_all)
         df = pd.DataFrame(r_all)
+
+        if df.shape[0]==0:
+          # early return
+          return df
+
         df = df.set_index(["instanceId", "EventTime"]).sort_index()
         
         return df

@@ -70,6 +70,11 @@ class CloudtrailClass(Ec2Class):
       logger.debug('Cloning AWS Cloudtrail lookup-events for ec2 type changes')
 
       df_all = man3.ec2_typeChanges()
+
+      if df_all.shape[0]==0:
+        # early return
+        logger.warning("No data found for cloudtrail EC2 type changes")
+        return
         
       # list of instance IDs
       iid_all = set(df_all.reset_index()['instanceId'].tolist())

@@ -1,6 +1,11 @@
-Version latest (to be tagged as 0.5.2) (...)
+Version latest (to be tagged as 0.5.2) (2019-09-10)
 
 - ...
+
+
+Version 0.5.3 (2019-09-10)
+
+- bugfix: case of no cloudtrail data found to be handled properly instead of throwing a weird pandas error
 
 
 Version 0.5.2 (2019-09-03)

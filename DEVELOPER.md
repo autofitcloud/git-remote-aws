@@ -26,6 +26,8 @@ Test
 echo "list" | git-remote-aws+ec2 aws /describe-instances # default AWS endpoint
 echo "list" | git-remote-aws+ec2 aws http://ec2.us-west-2.amazonaws.com/describe-instances # specific AWS endpoint
 echo "list" | git-remote-aws+ec2 aws http://localhost:5000/describe-instances # moto AWS endpoint
+
+echo "list" | git-remote-aws+cloudtrail ctle_ec2Typechanges "/lookup-events?filter=ec2TypeChanges&profile=shadi_none" # cloudtrail
 ```
 
 or more completely
