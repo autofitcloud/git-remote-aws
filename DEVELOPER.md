@@ -28,6 +28,8 @@ echo "list" | git-remote-aws+ec2 aws http://ec2.us-west-2.amazonaws.com/describe
 echo "list" | git-remote-aws+ec2 aws http://localhost:5000/describe-instances # moto AWS endpoint
 
 echo "list" | git-remote-aws+cloudtrail ctle_ec2Typechanges "/lookup-events?filter=ec2TypeChanges&profile=shadi_none" # cloudtrail
+
+echo "list" | git-remote-aws+ec2 aws /catalog
 ```
 
 or more completely
@@ -51,6 +53,12 @@ or
 git init
 git remote add aws aws+ec2::http://localhost:3000/describe-instances
 git fetch aws
+```
+
+Also
+
+```
+pytest gitRemoteAws/test_pullEc2.py
 ```
 
 

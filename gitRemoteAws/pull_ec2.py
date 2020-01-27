@@ -86,6 +86,25 @@ def get_instDesc(fn, ec2, fulldata):
             json.dump(ri, fh, default=json_serial, indent=4, sort_keys=True)
 
 
+# https://stackoverflow.com/questions/20663619/what-does-amazon-aws-mean-by-network-performance#comment59356097_25620890
+Ec2NetPerfMap = {
+  'Very Low': 100,
+  'Low': 300,
+  'Low to Moderate': 600,
+  'Moderate': 900,
+  'High': 2200,
+
+  'Up to 10 Gigabit': 10000,
+  '10 Gigabit': 10000,
+  '12 Gigabit': 12000,
+  '20 Gigabit': 20000,
+  'Up to 25 Gigabit': 25000,
+  '25 Gigabit':   25000,
+  '50 Gigabit':   50000,
+  '75 Gigabit':   75000,
+  '100 Gigabit': 100000,
+}
+
 
 class Ec2CatGetter:
   def __init__(self, fn):
@@ -100,8 +119,10 @@ class Ec2CatGetter:
     # r = http.request('get', ec2catalog)
 
     # cached https://cachecontrol.readthedocs.io/en/latest/
+    # bugfix 2020-01-27 I wasn't passing FileCache before
+    from cachecontrol.caches.file_cache import FileCache
     sess = requests.session()
-    cached_sess = CacheControl(sess)
+    cached_sess = CacheControl(sess, cache=FileCache('/tmp/git-remote-aws-www.ec2instances.info'))
     r = cached_sess.request('get', ec2catalog)
 
     r_json = r.json()
@@ -214,9 +235,75 @@ class Ec2CatGetter:
   def t3c_smaller_familyNone(self, df_pd):
     # append smaller types - ignoring family altogether
     df_l3 = df_pd.reset_index().copy()
-    df_l3 = df_l3.sort_values(['vCPUs', 'Memory', 'family_l1', 'family_l2']) # notice the sorting fields
-    df_l3['type_smaller'] = df_l3['API Name'].shift(+1) # notice the groupby field
+
+    # convert network performance string to an integer
+    df_l3['NetPerfInt'] = df_l3['Network Performance'].apply(lambda x: Ec2NetPerfMap[x] if x in Ec2NetPerfMap else None)
+
+    # Note that it is imperative to sort on cost first, because otherwise it is possible to recommend a smaller instance
+    # that is more expensive, eg t1.micro (0.6GB, 1vCPU) is smaller than t2.micro (1GB, 1vCPU) but is more expensive
+    # probably because it's older hardware
+    # TODO: It is possible to make several steps smaller sizes, rather than just 1 step as in the family-l2 constraint case.
+    #       eg t2.micro(1GB, 1vCPU) can go to t3.micro(1GB, 2vCPU) with a saving of $0.8 per month, but it can go further to
+    #       t3a.micro(1GB, 2vCPU) with a total saving of $1.6 per month
+    df_l3 = df_l3.sort_values(['Linux On Demand cost', 'vCPUs', 'Memory', 'family_l1', 'family_l2'], ascending=True) # notice the sorting fields
+
+    # Initialize
+    df_l3['type_smaller'] = None # df_l3['API Name'].shift(+1)
+    df_l3['type_same_cheaper'] = None
+
+    # set up a temporary index
+    df_l3 = df_l3.set_index(['API Name'])
+
+    # get same-and-cheaper and smaller, note not using exactly 0.5 for type_smaller because AWS provides exactly steps of 0.5
+    for type_str, type_factor in [ ('type_same_cheaper', 0.9), ('type_smaller', 0.45) ]:
+      # iterate over all rows
+      for l3_idx, l3_item in df_l3.iterrows():
+        # find the cheapest entry in df_l3 that matches CPU/memory, allowing for 10% drop in specs and saving at least 20% cost
+        df_match = df_l3[   (df_l3.vCPUs >= type_factor*l3_item.vCPUs)
+                          & (df_l3.Memory >= type_factor*l3_item.Memory)
+                          & (df_l3.NetPerfInt >= type_factor*l3_item.NetPerfInt) # maintain network
+                          & (df_l3['Linux On Demand cost'] < l3_item['Linux On Demand cost'])
+                          #& (df_l3['Linux On Demand cost'] < 0.8*l3_item['Linux On Demand cost'])
+                          & (df_l3.index != l3_idx)
+                        ]
+
+#        if type_str=='type_smaller':
+#          if l3_idx=='m4.2xlarge':
+#            import pdb
+#            pdb.set_trace()
+
+        if df_match.shape[0] == 0:
+          # just use the 1-step smaller of itself
+          continue
+
+        # FIXME do I really need this sort again here (already sorting above, but then calling set_index)
+        #df_match = df_match.sort_values(['Linux On Demand cost', 'vCPUs', 'Memory', 'family_l1', 'family_l2'], ascending=True)
+  
+        #if l3_idx=='m2.4xlarge':
+        #  import pdb
+        #  pdb.set_trace()
+
+        #if pd.isnull(df_match.iloc[0]['type_smaller']):
+        #  continue
+
+        # use the 1-step smaller of this cheapest match
+        df_l3.loc[ l3_idx, df_l3.columns==type_str ] = df_match.index[0]
+
+
+    # reset index
+    df_l3 = df_l3.reset_index()
+
+    # dupe merge from _postprocess_smaller but for "same_cheaper"
+    df_l3 = df_l3.merge(
+        df_l3[['API Name', 'vCPUs', 'Memory', 'Network Performance', 'Linux On Demand cost']].rename(columns={'API Name': 'type_same_cheaper'}),
+        on='type_same_cheaper',
+        how='left', # note different than "outer" below
+        suffixes=['', '_same_cheaper']
+    )
+
+    # process based on the n-step downsizing from above
     df_l3, dfl3_json, fn_temp = self._postprocess_smaller(df_l3, 't3c_smaller_familyNone.json')
+    return df_l3
 
 
   def _postprocess_smaller(self, df_l2, save_fn):

@@ -36,6 +36,7 @@ setup(
         'pyyaml==5.1.1',
         'jmespath==0.9.4',
         'tqdm==4.32.2',
+        'lockfile==0.12.2',
     ],
     entry_points='''
         [console_scripts]

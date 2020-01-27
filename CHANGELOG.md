@@ -3,9 +3,11 @@ Version latest (to be tagged as 0.5.2) (2019-09-10)
 - ...
 
 
-Version 0.5.4 (2020-01-27)
+Version 0.5.{4,5} (2020-01-27)
 
 - enh: split out code of AWS ec2 catalog to a class and added mapping to smaller type without accounting for family
+- bugfix: use file caching of www.ec2isntances.info file
+- enh: mapping to same performance but cheaper instances in the recent `t3c_smaller_familyNone` function
 
 
 Version 0.5.3 (2019-09-10)
