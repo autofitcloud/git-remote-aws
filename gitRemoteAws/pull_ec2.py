@@ -87,16 +87,12 @@ def get_instDesc(fn, ec2, fulldata):
 
 
 
-    
-    
+class Ec2CatGetter:
+  def __init__(self, fn):
+    self.fn = fn
 
-                
-                
-EC2INSTANCESINFO = 'http://www.ec2instances.info/instances.json'
-def get_awsCat(fn, ec2catalog=None):
-    ec2catalog = EC2INSTANCESINFO
-    logger.info("getting aws catalog from %s"%ec2catalog)
 
+  def t0_raw(self, ec2catalog):
     # non-cached
     # https://3.python-requests.org/
     # from requests import HTTPSession
@@ -108,18 +104,22 @@ def get_awsCat(fn, ec2catalog=None):
     cached_sess = CacheControl(sess)
     r = cached_sess.request('get', ec2catalog)
 
-    df_json = json.dumps(r.json(), indent=4, sort_keys=True)
+    r_json = r.json()
+    df_json = json.dumps(r_json, indent=4, sort_keys=True)
 
     # prep save
-    #logger.debug("mkdir %s"%fn['awsCat'])
-    os.makedirs(fn['awsCat'], exist_ok=True)
+    #logger.debug("mkdir %s"%self.fn['awsCat'])
+    os.makedirs(self.fn['awsCat'], exist_ok=True)
 
     # save raw
-    fn_temp = os.path.join(fn['awsCat'], 't0_raw.json')
+    fn_temp = os.path.join(self.fn['awsCat'], 't0_raw.json')
     with open(fn_temp, 'w') as fh:
         fh.write(df_json)
-        
 
+    return r_json, df_json
+
+
+  def t1_processed(self, r_json):
     # Convert json to pandas dataframe
     # Test live with
     # >>> import pandas as pd, json
@@ -127,7 +127,7 @@ def get_awsCat(fn, ec2catalog=None):
     # >>> df.head()
     #
     # df_pd = pd.read_json(r.json())
-    df_pd = pd.DataFrame(r.json()) # [:2]
+    df_pd = pd.DataFrame(r_json) # [:2]
 
     # Gather prices from different regions into a list and calculate the average
     # remember that default_priceRegion goes to the pandas dataframe index, and the output is a dict, so all keys after that go to the python dict
@@ -188,39 +188,38 @@ def get_awsCat(fn, ec2catalog=None):
     df_json = json.dumps(json.loads(df_json), indent=4, sort_keys=True)
 
     # save
-    fn_temp = os.path.join(fn['awsCat'], 't1_processed.json')
+    fn_temp = os.path.join(self.fn['awsCat'], 't1_processed.json')
     with open(fn_temp, 'w') as fh:
         fh.write(df_json)
 
+    return df_pd, df_json
+
+
+  def t3a_smaller_familyL1(self, df_pd):      
     # append smaller types - family_l1
     df_l1 = df_pd.copy()
     df_l1 = df_l1.sort_values(['family_l1', 'vCPUs', 'Memory', 'family_l2']) # notice the sorting fields
     df_l1['type_smaller'] = df_l1.groupby('family_l1')['API Name'].shift(+1)
-    df_l1 = df_l1.merge(
-        df_l1[['API Name', 'vCPUs', 'Memory', 'Linux On Demand cost']].rename(columns={'API Name': 'type_smaller'}),
-        on='type_smaller',
-        how='outer',
-        suffixes=['', '_smaller']
-    )
-    df_l1 = df_l1.sort_values(['family_l1', 'family_l2', 'vCPUs', 'Memory'])
-    df_l1.set_index(['family_l1','family_l2','API Name'], inplace=True)
+    df_l1, dfl1_json, fn_temp = self._postprocess_smaller(df_l1, 't3a_smaller_familyL1.json')
 
-    df_l1['ratio_cpu'] = df_l1.vCPUs / df_l1.vCPUs_smaller
-    df_l1['ratio_mem'] = df_l1.Memory / df_l1.Memory_smaller
-    # df_l1['ratio_min'] = df_l1[['ratio_cpu', 'ratio_mem']].min(axis=1)
-    df_l1['ratio_max'] = df_l1[['ratio_cpu', 'ratio_mem']].max(axis=1) # this is the bottleneck
-    dfl1_json = df_l1.reset_index().to_json(orient='split')
-    dfl1_json = json.dumps(json.loads(dfl1_json), indent=4, sort_keys=True) # pretty-print
 
-    # save
-    fn_temp = os.path.join(fn['awsCat'], 't3a_smaller_familyL1.json')
-    with open(fn_temp, 'w') as fh:
-        fh.write(dfl1_json)
-
+  def t3b_smaller_familyL2(self, df_pd):
     # append smaller types - family_l2
     df_l2 = df_pd.reset_index().copy()
     df_l2 = df_l2.sort_values(['family_l1', 'family_l2', 'vCPUs', 'Memory']) # notice the sorting fields
     df_l2['type_smaller'] = df_l2.groupby('family_l2')['API Name'].shift(+1) # notice the groupby field
+    df_l2, dfl2_json, fn_temp = self._postprocess_smaller(df_l2, 't3b_smaller_familyL2.json')
+
+
+  def t3c_smaller_familyNone(self, df_pd):
+    # append smaller types - ignoring family altogether
+    df_l3 = df_pd.reset_index().copy()
+    df_l3 = df_l3.sort_values(['vCPUs', 'Memory', 'family_l1', 'family_l2']) # notice the sorting fields
+    df_l3['type_smaller'] = df_l3['API Name'].shift(+1) # notice the groupby field
+    df_l3, dfl3_json, fn_temp = self._postprocess_smaller(df_l3, 't3c_smaller_familyNone.json')
+
+
+  def _postprocess_smaller(self, df_l2, save_fn):
     df_l2 = df_l2.merge(
         df_l2[['API Name', 'vCPUs', 'Memory', 'Linux On Demand cost']].rename(columns={'API Name': 'type_smaller'}),
         on='type_smaller',
@@ -238,9 +237,25 @@ def get_awsCat(fn, ec2catalog=None):
     dfl2_json = json.dumps(json.loads(dfl2_json), indent=4, sort_keys=True) # pretty-print
 
     # save
-    fn_temp = os.path.join(fn['awsCat'], 't3b_smaller_familyL2.json')
+    fn_temp = os.path.join(self.fn['awsCat'], save_fn)
     with open(fn_temp, 'w') as fh:
         fh.write(dfl2_json)
 
+    return df_l2, dfl2_json, fn_temp
 
+
+
+                
+                
+EC2INSTANCESINFO = 'http://www.ec2instances.info/instances.json'
+def get_awsCat(fn, ec2catalog=None):
+    ec2catalog = EC2INSTANCESINFO
+    logger.info("getting aws catalog from %s"%ec2catalog)
+
+    ecg = Ec2CatGetter(fn)
+    r_json, df_json = ecg.t0_raw(ec2catalog)
+    df_pd, df_json = ecg.t1_processed(r_json)
+    ecg.t3a_smaller_familyL1(df_pd)
+    ecg.t3b_smaller_familyL2(df_pd)
+    ecg.t3c_smaller_familyNone(df_pd)
 
