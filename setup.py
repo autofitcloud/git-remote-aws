@@ -33,7 +33,7 @@ setup(
         'requests',
         'cachecontrol',
         'pandas',
-        'pyyaml==5.1.1',
+        'pyyaml==5.4',
         'jmespath==0.9.4',
         'tqdm==4.32.2',
         'lockfile==0.12.2',
